@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Line Race — One Piece Study Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-beige: #F4F0E6;
+      --black: #111111;
+      --white: #FFFFFF;
+      --teal: #3DCCC7;
+      --magenta: #FF4081;
+      --yellow: #FFD600;
+      --red: #E93D3D;
+      --border-w: 4px;
+
+      /* The original map route (center path shifted by 50px) */
+      --map-path: path('M 60 250 C 150 100, 250 400, 400 250 C 550 100, 650 400, 800 250 C 950 100, 1050 400, 1140 250');
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-beige);
+      color: var(--black);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 0 2rem 0;
+      overflow-x: hidden;
+      background-image: radial-gradient(var(--black) 1.5px, transparent 1.5px);
+      background-size: 30px 30px;
+    }
+
+    .challenge-ended-banner {
+      background: var(--red);
+      color: var(--white);
+      text-align: center;
+      font-weight: 900;
+      font-size: 1.5rem;
+      padding: 1rem;
+      border-bottom: var(--border-w) solid var(--black);
+      text-transform: uppercase;
+      display: none;
+      margin-bottom: 2rem;
+    }
+
+    .challenge-ended-banner.show {
+      display: block;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 2rem;
+      padding: 0 1rem;
+    }
+
+    .bento {
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      box-shadow: 8px 8px 0px var(--black);
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    /* Header */
+    .header-bento {
+      background: var(--yellow);
+      text-align: center;
+      padding: 3rem 1.5rem;
+      position: relative;
+    }
+
+    .header-bento h1 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+
+    .header-bento p {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .settings-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px var(--black);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .settings-btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px var(--black);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-box {
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      box-shadow: 6px 6px 0px var(--black);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .stat-box.teal {
+      background: var(--teal);
+    }
+
+    .stat-box.magenta {
+      background: var(--magenta);
+      color: var(--white);
+    }
+
+    .stat-box.red {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .day-btn {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 4px;
+      transition: transform 0.1s;
+    }
+
+    .day-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .day-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Race Map */
+    .map-bento {
+      background: var(--teal);
+      padding: 1.5rem 0;
+      /* Full bleed map scroll inside */
+    }
+
+    .map-bento .bento-title {
+      margin: 0 1.5rem 1.5rem 1.5rem;
+    }
+
+    .bento-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      border-bottom: var(--border-w) solid var(--black);
+      padding-bottom: 0.5rem;
+      display: inline-block;
+      color: inherit;
+    }
+
+    .map-bento .bento-title {
+      color: var(--black);
+    }
+
+    .map-scroll {
+      width: 100%;
+      overflow-x: auto;
+      border-top: var(--border-w) solid var(--black);
+      border-bottom: var(--border-w) solid var(--black);
+      background: var(--bg-beige);
+    }
+
+    .map-scroll::-webkit-scrollbar {
+      height: 14px;
+    }
+
+    .map-scroll::-webkit-scrollbar-track {
+      background: var(--bg-beige);
+      border-top: var(--border-w) solid var(--black);
+    }
+
+    .map-scroll::-webkit-scrollbar-thumb {
+      background: var(--black);
+      border-radius: 0;
+    }
+
+    .map-inner {
+      position: relative;
+      width: 1200px;
+      height: 500px;
+      margin: 0 auto;
+    }
+
+    .map-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Waypoints along the path */
+    .waypoint {
+      position: absolute;
+      left: 0;
+      top: 0;
+      offset-path: var(--map-path);
+      offset-rotate: 0deg;
+      /* Keep upright */
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+    }
+
+    .waypoint-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--yellow);
+      border: var(--border-w) solid var(--black);
+    }
+
+    .end-icon {
+      background: var(--red);
+      width: 36px;
+      height: 36px;
+    }
+
+    .waypoint-text {
+      position: absolute;
+      top: 100%;
+      margin-top: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      background: var(--white);
+      border: 3px solid var(--black);
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      box-shadow: 2px 2px 0px var(--black);
+    }
+
+    /* Ships */
+    .ship-unit {
+      position: absolute;
+      left: 0;
+      top: 0;
+      /* offset-path will be set dynamically */
+      offset-rotate: 0deg;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      transition: offset-distance 0.4s steps(8);
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      padding: 4px 10px;
+      font-weight: 900;
+      font-size: 1.5rem;
+      box-shadow: 4px 4px 0px var(--black);
+    }
+
+    /* Leaderboard */
+    .leaderboard-bento {
+      background: var(--magenta);
+    }
+
+    .leaderboard-bento .bento-title {
+      color: var(--white);
+      text-shadow: 3px 3px 0px var(--black);
+    }
+
+    .team-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .team-card {
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      box-shadow: 6px 6px 0px var(--black);
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .team-card:hover {
+      transform: translate(-4px, -4px);
+      box-shadow: 10px 10px 0px var(--black);
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--yellow);
+      border: var(--border-w) solid var(--black);
+      font-weight: 900;
+      font-size: 1.2rem;
+      padding: 4px 10px;
+      box-shadow: 4px 4px 0px var(--black);
+    }
+
+    .card-ship {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .card-name {
+      font-weight: 900;
+      font-size: 1.3rem;
+      margin-bottom: 0.2rem;
+      text-transform: uppercase;
+    }
+
+    .card-members {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .card-hours {
+      font-size: 2.2rem;
+      font-weight: 900;
+    }
+
+    .prog-bar-container {
+      width: 100%;
+      height: 24px;
+      border: var(--border-w) solid var(--black);
+      background: var(--bg-beige);
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--fill-color, var(--teal));
+      border-right: var(--border-w) solid var(--black);
+      transition: width 0.4s steps(8);
+    }
+
+    /* Bottom Split */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-bento {
+      background: var(--yellow);
+    }
+
+    .log-bento {
+      background: var(--white);
+    }
+
+    /* Form */
+    .form-row {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-lbl {
+      display: block;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+    }
+
+    .form-ctrl {
+      width: 100%;
+      border: var(--border-w) solid var(--black);
+      padding: 1rem;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: var(--white);
+      box-shadow: 5px 5px 0px var(--black);
+      transition: box-shadow 0.1s, transform 0.1s;
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+
+    .form-ctrl:focus {
+      outline: none;
+      transform: translate(2px, 2px);
+      box-shadow: 3px 3px 0px var(--black);
+    }
+
+    .log-btn {
+      width: 100%;
+      background: var(--red);
+      color: var(--white);
+      border: var(--border-w) solid var(--black);
+      padding: 1.2rem;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 6px 6px 0px var(--black);
+      transition: all 0.1s;
+      margin-top: 1rem;
+    }
+
+    .log-btn:active {
+      transform: translate(6px, 6px);
+      box-shadow: 0px 0px 0px var(--black);
+    }
+
+    .log-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 6px 6px 0px var(--black);
+    }
+
+    /* Activity Log */
+    .activity-scroll {
+      max-height: 350px;
+      overflow-y: auto;
+      padding-right: 1rem;
+      border: var(--border-w) solid var(--black);
+      padding: 1rem;
+      background: var(--bg-beige);
+    }
+
+    .activity-scroll::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .activity-scroll::-webkit-scrollbar-track {
+      background: var(--bg-beige);
+      border-left: var(--border-w) solid var(--black);
+    }
+
+    .activity-scroll::-webkit-scrollbar-thumb {
+      background: var(--black);
+    }
+
+    .log-entry {
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      box-shadow: 4px 4px 0px var(--black);
+      font-size: 1.1rem;
+    }
+
+    .log-entry:last-child {
+      margin-bottom: 0;
+    }
+
+    .log-hrs {
+      color: var(--red);
+      font-weight: 900;
+    }
+
+    .log-ts {
+      font-size: 0.9rem;
+      display: block;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
+    .log-empty {
+      text-align: center;
+      font-weight: 900;
+      font-size: 1.2rem;
+      padding: 2rem;
+      text-transform: uppercase;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: var(--teal);
+      border: var(--border-w) solid var(--black);
+      box-shadow: 8px 8px 0px var(--black);
+      padding: 1.5rem;
+      font-weight: 900;
+      font-size: 1.2rem;
+      z-index: 1000;
+      transform: translateX(150%);
+      transition: transform 0.2s steps(6);
+      text-transform: uppercase;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* Overlays */
+    .winner-overlay,
+    .settings-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(244, 240, 230, 0.95);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .winner-overlay.show,
+    .settings-overlay.show {
+      display: flex;
+    }
+
+    .winner-box,
+    .settings-box {
+      background: var(--yellow);
+      border: 6px solid var(--black);
+      box-shadow: 15px 15px 0px var(--black);
+      padding: 4rem 2rem;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .settings-box {
+      background: var(--bg-beige);
+      padding: 2rem;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .winner-ship {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .winner-headline {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      line-height: 1;
+    }
+
+    .winner-sub {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+
+    .winner-dismiss {
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      padding: 1rem 2rem;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 6px 6px 0px var(--black);
+    }
+
+    .winner-dismiss:active {
+      transform: translate(6px, 6px);
+      box-shadow: 0px 0px 0px var(--black);
+    }
+
+    /* Settings Modal Specifics */
+    .settings-box .bento-title {
+      margin-bottom: 1.5rem;
+    }
+
+    .crew-card {
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      box-shadow: 4px 4px 0px var(--black);
+    }
+
+    .crew-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .crew-row input {
+      flex: 1;
+      border: 2px solid var(--black);
+      padding: 0.5rem;
+      font-family: inherit;
+      font-weight: 700;
+      min-width: 0;
+    }
+
+    .crew-row .ship-inp {
+      flex: 0 0 60px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .crew-row .color-inp {
+      flex: 0 0 60px;
+      padding: 0;
+      height: 42px;
+      cursor: pointer;
+    }
+
+    .crew-row .del-btn {
+      background: var(--red);
+      color: var(--white);
+      border: 2px solid var(--black);
+      font-weight: 900;
+      padding: 0.5rem;
+      cursor: pointer;
+      height: 42px;
+    }
+
+    .log-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .delete-log-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      opacity: 0.5;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .delete-log-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .settings-actions button {
+      flex: 1;
+      padding: 1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      border: var(--border-w) solid var(--black);
+      cursor: pointer;
+      box-shadow: 4px 4px 0px var(--black);
+    }
+
+    .settings-actions button.save-btn {
+      background: var(--teal);
+    }
+
+    .settings-actions button.add-btn {
+      background: var(--magenta);
+      color: var(--white);
+    }
+
+    .settings-actions button.cancel-btn {
+      background: var(--white);
+    }
+
+    .settings-actions button:active {
+      transform: translate(4px, 4px);
+      box-shadow: none;
+    }
+
+    @media (max-width: 600px) {
+      .crew-row {
+        flex-wrap: wrap;
+      }
+
+      .settings-actions {
+        flex-direction: column;
+      }
+    }
+
+    /* Rules Section */
+    .rules-bento {
+      background: var(--bg-beige);
+    }
+    
+    .rules-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .rules-list li {
+      background: var(--white);
+      border: 3px solid var(--black);
+      padding: 1rem;
+      box-shadow: 4px 4px 0px var(--black);
+      line-height: 1.4;
+    }
+
+    .rules-list li strong {
+      font-weight: 900;
+      color: var(--magenta);
+      text-transform: uppercase;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="challenge-ended-banner" id="challengeEndedBanner">CHALLENGE ENDED</div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Winner Overlay -->
+  <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-box">
+      <span class="winner-ship" id="winnerShipBig">🏴‍☠️</span>
+      <div class="winner-headline">ONE PIECE FOUND!</div>
+      <div class="winner-sub" id="winnerSubText">The Straw Hats claim the treasure!</div>
+      <button class="winner-dismiss" id="winnerDismissBtn">
+        BACK TO START
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Overlay -->
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-box">
+      <h2 class="bento-title">Captain's Quarters</h2>
+      <div id="teamsEditor"></div>
+      <div class="settings-actions">
+        <button class="add-btn" id="addCrewBtn">Add Crew</button>
+        <button class="save-btn" id="saveSettingsBtn">Save</button>
+        <button class="cancel-btn" id="closeSettingsBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header class="bento header-bento">
+      <h1>Grand Line Race</h1>
+      <p>ONE PIECE STUDY TRACKER</p>
+      <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-box teal">
+        <span>🕐</span> <span id="clockEl">--:--:--</span>
+      </div>
+      <div class="stat-box magenta day-box">
+        <span>📅</span> DAY
+        <span id="dayEl">1</span>
+        OF 7
+      </div>
+      <div class="stat-box red">
+        <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
+      </div>
+      <div class="stat-box">
+        <span>🎯</span> GOALS: <span id="globalGoalsEl">0</span> HRS
+      </div>
+    </div>
+
+    <!-- Map -->
+    <section class="bento map-bento">
+      <h2 class="bento-title">The Grand Line Track</h2>
+
+      <div class="map-scroll">
+        <div class="map-inner">
+          <!-- The parallel twisted routes spaced 50px apart -->
+          <svg class="map-svg" viewBox="0 0 1200 500" preserveAspectRatio="none">
+            <path d="M 60 150 C 150 0, 250 300, 400 150 C 550 0, 650 300, 800 150 C 950 0, 1050 300, 1140 150"
+              fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+            <path d="M 60 200 C 150 50, 250 350, 400 200 C 550 50, 650 350, 800 200 C 950 50, 1050 350, 1140 200"
+              fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+            <path d="M 60 250 C 150 100, 250 400, 400 250 C 550 100, 650 400, 800 250 C 950 100, 1050 400, 1140 250"
+              fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
+            <path d="M 60 300 C 150 150, 250 450, 400 300 C 550 150, 650 450, 800 300 C 950 150, 1050 450, 1140 300"
+              fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+            <path d="M 60 350 C 150 200, 250 500, 400 350 C 550 200, 650 500, 800 350 C 950 200, 1050 500, 1140 350"
+              fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+          </svg>
+
+          <!-- Lore-Accurate Waypoints -->
+          <div class="waypoint" style="offset-distance: 0%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 12.5%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 25%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 37.5%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 50%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 62.5%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 75%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 87.5%">
+            <div class="waypoint-icon"></div><span class="waypoint-text">Wano</span>
+          </div>
+          <div class="waypoint" style="offset-distance: 100%">
+            <div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span>
+          </div>
+
+          <!-- Ships Container -->
+          <div id="shipsTrack"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section class="bento leaderboard-bento">
+      <h2 class="bento-title">Leaderboard</h2>
+      <div class="team-cards-grid" id="teamCardsGrid"></div>
+    </section>
+
+    <!-- Bottom: Form & Log -->
+    <div class="bottom-grid">
+
+      <div class="bento form-bento">
+        <h2 class="bento-title">Log Hours</h2>
+
+        <div class="form-row">
+          <label class="form-lbl" for="teamSel">Choose Your Crew</label>
+          <select class="form-ctrl" id="teamSel"></select>
+        </div>
+        <div class="form-row">
+          <label class="form-lbl" for="nameInp">Your Name</label>
+          <input class="form-ctrl" type="text" id="nameInp" placeholder="Enter your name" maxlength="30">
+        </div>
+        <div class="form-row">
+          <label class="form-lbl" for="hrsInp">Hours Studied</label>
+          <input class="form-ctrl" type="number" id="hrsInp" min="0.5" max="24" step="0.5" placeholder="e.g. 2.5">
+        </div>
+        <button class="log-btn" id="logBtn">Set Sail!</button>
+      </div>
+
+      <div class="bento log-bento">
+        <h2 class="bento-title">Captain's Log</h2>
+        <div class="activity-scroll" id="activityLog">
+          <div class="log-empty">No voyages logged yet.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Rules Section -->
+    <section class="bento rules-bento">
+      <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
+      <ul class="rules-list">
+        <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
+        <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
+        <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
+        <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
+        <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
+      </ul>
+    </section>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, setDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAUd09ighwYi6s9Ljr7cudhj9TFv9blevk",
+      authDomain: "grand-line-967b4.firebaseapp.com",
+      projectId: "grand-line-967b4",
+      storageBucket: "grand-line-967b4.firebasestorage.app",
+      messagingSenderId: "525682318045",
+      appId: "1:525682318045:web:a6c62a02511a9f2afed934",
+      measurementId: "G-R5VB1X8K79"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const raceDocRef = doc(db, 'raceData/currentRace');
+
+    // Define challenge start date
+    const CHALLENGE_START = new Date("2026-04-23T00:00:00").getTime();
+
+    const DEFAULT_TEAMS = [
+      { id: 'straw', name: 'Straw Hats', ship: '🏴‍☠️', color: '#E93D3D', members: 'Luffy & Zoro', weeklyGoal: 49 },
+      { id: 'heart', name: 'Heart Pirates', ship: '⚓', color: '#3DCCC7', members: 'Law & Bepo', weeklyGoal: 42 },
+      { id: 'fire', name: 'Fire Fist Crew', ship: '🔥', color: '#FFD600', members: 'Ace & Sabo', weeklyGoal: 56 },
+      { id: 'warlrd', name: 'Warlord Alliance', ship: '⚔️', color: '#FF4081', members: 'Mihawk & Doflamingo', weeklyGoal: 45.5 },
+      { id: 'sky', name: 'Sky Pirates', ship: '☁️', color: '#111111', members: 'Shanks & Rayleigh', weeklyGoal: 35 },
+    ];
+
+    let state = {
+      teams: [...DEFAULT_TEAMS],
+      dailyHours: {},
+      log: []
+    };
+
+    function getWeeklyGoal(team) {
+      if (team.weeklyGoal) return team.weeklyGoal;
+      if (team.baseDailyGoal) {
+        if (team.baseDailyGoal > 24) return team.baseDailyGoal;
+        return team.baseDailyGoal * 7;
+      }
+      return 35;
+    }
+
+    function getBaseDailyGoal(team) {
+      return getWeeklyGoal(team) / 7;
+    }
+
+    function getCurrentDay() {
+      const now = Date.now();
+      const diff = now - CHALLENGE_START;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+      return Math.max(1, days);
+    }
+
+    function getDailyGoal(teamId, day) {
+      const team = state.teams.find(t => t.id === teamId);
+      if (!team) return 0;
+
+      const baseDaily = getBaseDailyGoal(team);
+      let currentGoal = baseDaily;
+      for (let d = 1; d < day; d++) {
+        const loggedThatDay = (state.dailyHours[d] && state.dailyHours[d][teamId]) || 0;
+        if (loggedThatDay >= currentGoal) {
+          currentGoal = currentGoal * 1.15;
+        } else {
+          currentGoal = baseDaily;
+        }
+      }
+      return currentGoal;
+    }
+
+    function getCumulativeHours(teamId) {
+      let total = 0;
+      for (const d in state.dailyHours) {
+        total += (state.dailyHours[d][teamId] || 0);
+      }
+      return total;
+    }
+
+    const MAP_PATHS = [
+      "path('M 60 150 C 150 0, 250 300, 400 150 C 550 0, 650 300, 800 150 C 950 0, 1050 300, 1140 150')",
+      "path('M 60 200 C 150 50, 250 350, 400 200 C 550 50, 650 350, 800 200 C 950 50, 1050 350, 1140 200')",
+      "path('M 60 250 C 150 100, 250 400, 400 250 C 550 100, 650 400, 800 250 C 950 100, 1050 400, 1140 250')",
+      "path('M 60 300 C 150 150, 250 450, 400 300 C 550 150, 650 450, 800 300 C 950 150, 1050 450, 1140 300')",
+      "path('M 60 350 C 150 200, 250 500, 400 350 C 550 200, 650 500, 800 350 C 950 200, 1050 500, 1140 350')"
+    ];
+
+    let isInitialized = false;
+    let winnerTriggered = false;
+
+    onSnapshot(raceDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        state.teams = data.teams || [...DEFAULT_TEAMS];
+        if (data.dailyHours) {
+          state.dailyHours = data.dailyHours;
+        } else if (data.hours) {
+          state.dailyHours = { 1: data.hours };
+        } else {
+          state.dailyHours = {};
+        }
+        state.log = data.log || [];
+        // Ensure all logs have unique IDs for deletion
+        state.log.forEach((l, i) => { if (!l.id) l.id = 'log_' + i + '_' + Date.now(); });
+      } else {
+        state.teams.forEach(t => {
+          state.dailyHours[1] = state.dailyHours[1] || {};
+          state.dailyHours[1][t.id] = 0;
+        });
+        setDoc(raceDocRef, state);
+      }
+
+      if (!isInitialized) {
+        initUI();
+        isInitialized = true;
+      } else {
+        updateUI();
+      }
+    });
+
+    async function saveState() {
+      await setDoc(raceDocRef, state);
+    }
+
+    function initUI() {
+      buildTeamSelect();
+      buildShipLanes();
+      updateUI();
+      setInterval(updateClock, 1000);
+
+      document.getElementById('logBtn').addEventListener('click', logHours);
+      document.getElementById('settingsBtn').addEventListener('click', openSettings);
+      document.getElementById('closeSettingsBtn').addEventListener('click', () => document.getElementById('settingsOverlay').classList.remove('show'));
+      document.getElementById('addCrewBtn').addEventListener('click', addCrewRow);
+      document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+      document.getElementById('winnerDismissBtn').addEventListener('click', () => document.getElementById('winnerOverlay').classList.remove('show'));
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && (e.target.id === 'hrsInp' || e.target.id === 'nameInp')) logHours();
+      });
+    }
+
+    function updateUI() {
+      buildTeamSelect();
+      buildShipLanes();
+      renderTeamCards();
+      renderLog();
+      updateClock();
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      document.getElementById('clockEl').textContent =
+        `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+      const day = getCurrentDay();
+
+      if (day > 7) {
+        document.getElementById('dayEl').textContent = '7';
+        document.getElementById('challengeEndedBanner').classList.add('show');
+        document.getElementById('logBtn').disabled = true;
+
+        if (!winnerTriggered) {
+          winnerTriggered = true;
+          const sorted = [...state.teams].sort((a, b) => {
+            const pctA = getCumulativeHours(a.id) / getWeeklyGoal(a);
+            const pctB = getCumulativeHours(b.id) / getWeeklyGoal(b);
+            return pctB - pctA;
+          });
+          if (sorted.length > 0) triggerWinner(sorted[0]);
+        }
+      } else {
+        document.getElementById('dayEl').textContent = day;
+        document.getElementById('challengeEndedBanner').classList.remove('show');
+        document.getElementById('logBtn').disabled = false;
+        winnerTriggered = false;
+      }
+
+      const total = state.teams.reduce((s, t) => s + getCumulativeHours(t.id), 0);
+      document.getElementById('totalEl').textContent = total % 1 === 0 ? total : total.toFixed(1);
+
+      const todayGoals = state.teams.reduce((s, t) => s + getDailyGoal(t.id, day), 0);
+      document.getElementById('globalGoalsEl').textContent = todayGoals % 1 === 0 ? todayGoals : todayGoals.toFixed(1);
+    }
+
+    function buildShipLanes() {
+      const track = document.getElementById('shipsTrack');
+      track.innerHTML = '';
+      state.teams.forEach((team, index) => {
+        const ship = document.createElement('div');
+        ship.className = 'ship-unit';
+        ship.id = 'ship_' + team.id;
+        ship.innerHTML = team.ship;
+        ship.style.offsetPath = MAP_PATHS[index % MAP_PATHS.length];
+        ship.style.zIndex = 10 + index;
+        track.appendChild(ship);
+
+        setTimeout(() => moveShip(team.id), 50);
+      });
+    }
+
+    function moveShip(teamId) {
+      const ship = document.getElementById('ship_' + teamId);
+      const team = state.teams.find(t => t.id === teamId);
+      if (!ship || !team) return;
+
+      const totalHrs = getCumulativeHours(teamId);
+      const totalExpected = getWeeklyGoal(team);
+      const pct = Math.min((totalHrs / totalExpected) * 100, 100);
+      ship.style.offsetDistance = pct + '%';
+    }
+
+    function renderTeamCards() {
+      const grid = document.getElementById('teamCardsGrid');
+      grid.innerHTML = '';
+      const day = getCurrentDay();
+
+      const sorted = [...state.teams].sort((a, b) => {
+        const aHrs = state.dailyHours[day]?.[a.id] || 0;
+        const bHrs = state.dailyHours[day]?.[b.id] || 0;
+        const aGoal = getDailyGoal(a.id, day);
+        const bGoal = getDailyGoal(b.id, day);
+        return (bHrs / bGoal) - (aHrs / aGoal);
+      });
+
+      sorted.forEach((team, idx) => {
+        const hrs = state.dailyHours[day]?.[team.id] || 0;
+        const goal = getDailyGoal(team.id, day);
+        const pct = Math.min((hrs / goal) * 100, 100);
+        const card = document.createElement('div');
+        card.className = 'team-card';
+        card.innerHTML = `
+      <div class="rank-badge">#${idx + 1}</div>
+      <span class="card-ship">${team.ship}</span>
+      <div class="card-name">${team.name}</div>
+      <div class="card-members">${team.members}</div>
+      <div class="card-hours">${hrs % 1 === 0 ? hrs : hrs.toFixed(1)} / ${goal.toFixed(1)}</div>
+      <div class="prog-bar-container">
+        <div class="prog-fill" style="width:${pct}%; --fill-color:${team.color}"></div>
+      </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    async function logHours() {
+      const btn = document.getElementById('logBtn');
+      if (btn.disabled) return;
+
+      const teamId = document.getElementById('teamSel').value;
+      const name = document.getElementById('nameInp').value.trim();
+      const hrs = parseFloat(document.getElementById('hrsInp').value);
+      if (!name) { showToast('Enter your name!'); return; }
+      if (isNaN(hrs) || hrs <= 0 || hrs > 24) { showToast('Enter valid hours (0.5–24)'); return; }
+
+      const team = state.teams.find(t => t.id === teamId);
+      const day = getCurrentDay();
+
+      const totalExpected = getWeeklyGoal(team);
+      const hadWon = getCumulativeHours(teamId) >= totalExpected;
+
+      const logId = 'log_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      const logEntry = { id: logId, teamId, teamName: team.name, ship: team.ship, name, hours: hrs, ts: new Date().toISOString(), day };
+
+      btn.disabled = true;
+      try {
+        const dayKey = `dailyHours.${day}.${teamId}`;
+    
+    // We update the document atomically.
+    await updateDoc(raceDocRef, {
+      [dayKey]: increment(hrs),
+      log: arrayUnion(logEntry)
+    });
+    
+    const hStr = hrs % 1 === 0 ? hrs : hrs.toFixed(1);
+    showToast(`${team.name} logged ${hStr} HRS`);
+    document.getElementById('hrsInp').value = '';
+
+    if(!hadWon && (getCumulativeHours(teamId) + hrs) >= totalExpected){
+      setTimeout(() => triggerWinner(team), 500);
+    }
+  } catch(e) {
+    console.error("Error logging hours: ", e);
+    // Fallback if doc or structure doesn't exist yet
+    if(e.code === 'not-found' || e.message?.includes('No document to update')) {
+      state.dailyHours[day] = state.dailyHours[day] || {};
+      state.dailyHours[day][teamId] = (state.dailyHours[day][teamId] || 0) + hrs;
+      state.log.unshift(logEntry);
+      if(state.log.length > 60) state.log.length = 60;
+      await setDoc(raceDocRef, state);
+      showToast("Logged (Created doc)");
+      document.getElementById('hrsInp').value = '';
+    } else {
+      showToast("Error updating database!");
+    }
+  }
+  btn.disabled = false;
+}
+
+function buildTeamSelect(){
+  const sel = document.getElementById('teamSel');
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  state.teams.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.name;
+    sel.appendChild(opt);
+  });
+  if(currentVal && state.teams.find(t => t.id === currentVal)) {
+    sel.value = currentVal;
+  }
+}
+
+function renderLog(){
+  const container = document.getElementById('activityLog');
+  if(!state.log.length){
+    container.innerHTML = '<div class="log-empty">No voyages logged yet.</div>';
+    return;
+  }
+  container.innerHTML = state.log.slice(0,40).map(e => {
+    const d = new Date(e.ts);
+    const pad = n => String(n).padStart(2,'0');
+    const ts  = `${ d.getMonth() + 1 }/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        const h = e.hours % 1 === 0 ? e.hours : Number(e.hours).toFixed(1);
+        return `<div class="log-entry">
+      <div class="log-entry-header">
+        <div>
+          ${e.ship} <strong>${e.teamName}</strong><br>
+          ${e.name} charted <span class="log-hrs">+${h} HRS</span>
+          <span class="log-ts">${ts}</span>
+        </div>
+        <button class="delete-log-btn" title="Delete Log" onclick="deleteLog('${e.id}')">🗑️</button>
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    window.deleteLog = async function (logId) {
+      if (!confirm("Are you sure you want to delete this log? The hours will be subtracted.")) return;
+      const idx = state.log.findIndex(l => l.id === logId);
+      if (idx > -1) {
+        const logItem = state.log[idx];
+        const logDay = logItem.day || getCurrentDay();
+
+        if (state.dailyHours[logDay] && state.dailyHours[logDay][logItem.teamId] != null) {
+          state.dailyHours[logDay][logItem.teamId] -= logItem.hours;
+          if (state.dailyHours[logDay][logItem.teamId] < 0) state.dailyHours[logDay][logItem.teamId] = 0;
+        }
+        state.log.splice(idx, 1);
+        await saveState();
+        showToast("Log deleted & hours reverted");
+      }
+    };
+
+    let _toastTimer;
+    window.showToast = function (msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+    };
+
+    function triggerWinner(team) {
+      document.getElementById('winnerShipBig').textContent = team.ship;
+      document.getElementById('winnerSubText').textContent = `${team.name} have found the One Piece!`;
+      document.getElementById('winnerOverlay').classList.add('show');
+    }
+
+    // Settings Modal
+    function openSettings() {
+      const container = document.getElementById('teamsEditor');
+      container.innerHTML = '';
+      state.teams.forEach((t, i) => {
+        container.appendChild(createTeamRow(t, i));
+      });
+      document.getElementById('settingsOverlay').classList.add('show');
+    }
+
+    function createTeamRow(team, index) {
+      const div = document.createElement('div');
+      div.className = 'crew-card';
+      div.dataset.index = index;
+
+      div.innerHTML = `
+    <input type="hidden" class="id-inp" value="${team.id}">
+    <div class="crew-row">
+      <input type="text" class="ship-inp" value="${team.ship}" title="Ship Emoji">
+      <input type="text" class="name-inp" value="${team.name}" placeholder="Crew Name">
+      <button class="del-btn" title="Delete Crew" onclick="this.parentElement.parentElement.remove()">Remove</button>
+    </div>
+    <div class="crew-row">
+      <input type="text" class="members-inp" value="${team.members}" placeholder="Members (e.g. Luffy & Zoro)">
+      <input type="number" class="goal-inp" value="${getWeeklyGoal(team)}" placeholder="Weekly Goal (Hrs)" title="Total Weekly Goal Hours" min="1" step="0.5">
+      <input type="color" class="color-inp" value="${parseColor(team.color)}" title="Crew Color">
+    </div>
+  `;
+      return div;
+    }
+
+    function parseColor(c) {
+      if (!c) return '#3DCCC7';
+      if (typeof c !== 'string') return '#3DCCC7';
+      if (c.startsWith('#')) return c;
+      const map = {
+        'var(--red)': '#E93D3D',
+        'var(--teal)': '#3DCCC7',
+        'var(--yellow)': '#FFD600',
+        'var(--magenta)': '#FF4081',
+        'var(--black)': '#111111'
+      };
+      return map[c] || '#3DCCC7';
+    }
+
+    function addCrewRow() {
+      const container = document.getElementById('teamsEditor');
+      const newTeam = { id: 'team_' + Date.now(), name: '', ship: '⛵', color: '#3DCCC7', members: '', weeklyGoal: 35 };
+      container.appendChild(createTeamRow(newTeam, container.children.length));
+    }
+
+    async function saveSettings() {
+      const rows = document.querySelectorAll('.crew-card');
+      const newTeams = [];
+      rows.forEach(row => {
+        newTeams.push({
+          id: row.querySelector('.id-inp').value,
+          ship: row.querySelector('.ship-inp').value,
+          name: row.querySelector('.name-inp').value,
+          members: row.querySelector('.members-inp').value,
+          weeklyGoal: Number(row.querySelector('.goal-inp').value),
+          color: row.querySelector('.color-inp').value
+        });
+      });
+
+      if (newTeams.length === 0) {
+        showToast("Need at least 1 crew!");
+        return;
+      }
+
+      state.teams = newTeams;
+
+      // Initialize daily hours if missing for any team for today
+      const day = getCurrentDay();
+      state.dailyHours[day] = state.dailyHours[day] || {};
+      state.teams.forEach(t => {
+        if (state.dailyHours[day][t.id] == null) state.dailyHours[day][t.id] = 0;
+      });
+
+      await saveState();
+      document.getElementById('settingsOverlay').classList.remove('show');
+      showToast("Settings Saved!");
+    }
+  </script>
+</body>
+
+</html>
