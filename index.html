@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -8,1317 +7,193 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#F9F9F6">
   <title>Grand Line Race — One Piece Study Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-alabaster: #F9F9F6;
-      --black: #0F0F0F;
-      --white: #FFFFFF;
-      --teal: #2EC4B6;
-      --magenta: #E71D36;
-      --yellow: #FF9F1C;
-      --red: #D90429;
-      --border-w: 4px;
-      --br: 12px;
-      --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-      /* The straight map route */
-      --map-path: path('M 60 250 L 1140 250');
-    }
-
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      width: 100%;
-      max-width: 100vw;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    body {
-      background-color: var(--bg-alabaster);
-      color: var(--black);
-      font-family: 'Space Grotesk', system-ui, sans-serif;
-      min-height: 100vh;
-      padding: 0 0 calc(80px + env(safe-area-inset-bottom)) 0;
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      pointer-events: none;
-      opacity: 0.25;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    }
-
-    /* Redefine --bg-beige for any inline styles that used it */
-    :root {
-      --bg-beige: var(--bg-alabaster);
-    }
-
-    .challenge-ended-banner {
-      background: var(--red);
-      color: var(--white);
-      text-align: center;
-      font-weight: 900;
-      font-size: 1.5rem;
-      padding: 1rem;
-      border-bottom: var(--border-w) solid var(--black);
-      text-transform: uppercase;
-      letter-spacing: -0.03em;
-      display: none;
-      margin-bottom: 2rem;
-    }
-
-    .challenge-ended-banner.show {
-      display: block;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      padding: 0 1rem;
-    }
-
-    .bento {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: var(--br);
-      box-shadow: 6px 6px 0px var(--black);
-      padding: 2.5rem;
-      position: relative;
-      min-width: 0;
-    }
-
-    /* Header */
-    .header-bento {
-      background: var(--yellow);
-      text-align: center;
-      padding: 4rem 2rem;
-      position: relative;
-    }
-
-    .header-bento h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-
-    .header-bento p {
-      font-size: clamp(1rem, 2vw, 1.4rem);
-      font-weight: 700;
-      margin-top: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .settings-btn {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      font-size: 1.5rem;
-      padding: 0.5rem;
-      cursor: pointer;
-      box-shadow: 4px 4px 0px var(--black);
-      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-    }
-
-    .settings-btn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px var(--black);
-    }
-
-    .settings-btn:active {
-      transform: translate(4px, 4px) !important;
-      box-shadow: 0px 0px 0px var(--black) !important;
-      transition: transform 0.05s, box-shadow 0.05s;
-    }
-
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .stat-box {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: var(--br);
-      box-shadow: 6px 6px 0px var(--black);
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      font-weight: 700;
-      font-size: 1.3rem;
-      letter-spacing: -0.02em;
-    }
-
-    .stat-box.teal {
-      background: var(--teal);
-    }
-
-    .stat-box.magenta {
-      background: var(--magenta);
-      color: var(--white);
-    }
-
-    .stat-box.red {
-      background: var(--red);
-      color: var(--white);
-    }
-
-    .day-btn {
-      background: transparent;
-      border: none;
-      color: inherit;
-      font-size: 1.4rem;
-      cursor: pointer;
-      padding: 0 4px;
-      transition: transform 0.2s var(--spring);
-    }
-
-    .day-btn:hover {
-      transform: scale(1.3);
-    }
-
-    .day-btn:active {
-      transform: scale(0.9);
-      transition: transform 0.05s;
-    }
-
-    /* Race Map */
-    .map-bento {
-      background: var(--teal);
-      padding: 2.5rem 0;
-      /* Full bleed map scroll inside */
-    }
-
-    .map-bento .bento-title {
-      margin: 0 2.5rem 1.5rem 2.5rem;
-    }
-
-    .bento-title {
-      font-size: 2rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.03em;
-      border-bottom: var(--border-w) solid var(--black);
-      padding-bottom: 0.5rem;
-      display: inline-block;
-      color: inherit;
-      line-height: 1.1;
-    }
-
-    .map-bento .bento-title {
-      color: var(--black);
-    }
-
-    .map-scroll {
-      width: 100%;
-      overflow-x: auto;
-      border-top: var(--border-w) solid var(--black);
-      border-bottom: var(--border-w) solid var(--black);
-      background: var(--bg-alabaster);
-      
-    }
-    
-    input, select, button {
-      min-height: 48px;
-    }
-
-    .map-scroll::-webkit-scrollbar {
-      height: 16px;
-    }
-
-    .map-scroll::-webkit-scrollbar-track {
-      background: var(--bg-alabaster);
-      border-top: var(--border-w) solid var(--black);
-    }
-
-    .map-scroll::-webkit-scrollbar-thumb {
-      background: var(--black);
-      border-radius: 0;
-      border: 3px solid var(--bg-alabaster);
-    }
-
-    .map-inner {
-      position: relative;
-      width: 1200px;
-      height: 600px;
-      /* Increased from 500px */
-      margin: 0 auto;
-    }
-
-    .map-svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Waypoints along the path */
-    .waypoint {
-      position: absolute;
-      left: 0;
-      top: 0;
-      offset-path: var(--map-path);
-      offset-rotate: 0deg;
-      /* Keep upright */
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 5;
-    }
-
-    .waypoint-icon {
-      width: 24px;
-      height: 24px;
-      background: var(--yellow);
-      border: var(--border-w) solid var(--black);
-      border-radius: 50%;
-    }
-
-    .end-icon {
-      background: var(--red);
-      width: 36px;
-      height: 36px;
-    }
-
-    .waypoint-text {
-      position: absolute;
-      top: 100%;
-      margin-top: 2px;
-      font-weight: 900;
-      text-transform: uppercase;
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 0.85rem;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-      box-shadow: 2px 2px 0px var(--black);
-    }
-
-    /* Ships - Upgraded to Premium Map Pins */
-    .ship-unit {
-      position: absolute;
-      left: 0;
-      top: 0;
-      offset-rotate: 0deg;
-      /* We add CSS variables for the scatter effect so they don't overlap perfectly */
-      transform: translate(calc(-50% + var(--scatter-x, 0px)),
-          calc(-50% + var(--scatter-y, 0px)));
-      z-index: 10;
-      transition: offset-distance 0.4s var(--spring), transform 0.2s;
-
-      /* The Token Look */
-      width: 54px;
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--ship-color, var(--white));
-      border: var(--border-w) solid var(--black);
-      border-radius: 50%;
-      font-size: 1.8rem;
-      box-shadow: 4px 4px 0px var(--black);
-      cursor: pointer;
-    }
-
-    /* The little triangle pointing down to the track */
-    .ship-unit::after {
-      content: '';
-      position: absolute;
-      bottom: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-top: 10px solid var(--black);
-      z-index: -1;
-    }
-
-    /* Small hover effect so you can pop them to the top if they are clustered */
-    .ship-unit:hover {
-      z-index: 100 !important;
-      transform: translate(calc(-50% + var(--scatter-x, 0px)),
-          calc(-55% + var(--scatter-y, 0px))) scale(1.1);
-      box-shadow: 6px 6px 0px var(--black);
-    }
-
-    .ship-pct {
-      position: absolute;
-      top: 100%;
-      margin-top: 15px;
-      font-size: 0.85rem;
-      font-weight: 900;
-      background: var(--white);
-      border: 2px solid var(--black);
-      border-radius: 6px;
-      padding: 2px 6px;
-      color: var(--black);
-      line-height: 1;
-      box-shadow: 2px 2px 0px var(--black);
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    /* Leaderboard */
-    .leaderboard-bento {
-      background: var(--magenta);
-    }
-
-    .leaderboard-bento .bento-title {
-      color: var(--white);
-      text-shadow: 3px 3px 0px var(--black);
-    }
-
-    .team-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 2rem;
-    }
-
-    .team-card {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: var(--br);
-      box-shadow: 8px 8px 0px var(--black);
-      padding: 2.5rem 1.5rem;
-      text-align: center;
-      position: relative;
-      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-    }
-
-    .team-card:hover {
-      transform: translate(-6px, -6px);
-      box-shadow: 14px 14px 0px var(--black);
-    }
-
-    .rank-badge {
-      position: absolute;
-      top: -12px;
-      right: -12px;
-      background: var(--yellow);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      font-weight: 900;
-      font-size: 1.4rem;
-      padding: 6px 14px;
-      box-shadow: 4px 4px 0px var(--black);
-      letter-spacing: -0.02em;
-    }
-
-    .card-ship {
-      font-size: 3.5rem;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-
-    .card-name {
-      font-weight: 900;
-      font-size: 1.5rem;
-      margin-bottom: 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-    }
-
-    .card-members {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      border-radius: calc(var(--br) - 6px);
-    }
-
-    .card-hours {
-      font-size: 2.5rem;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-    }
-
-    .prog-bar-container {
-      width: 100%;
-      height: 28px;
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      background: var(--bg-alabaster);
-      margin-top: 1.5rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .prog-fill {
-      height: 100%;
-      background: var(--fill-color, var(--teal));
-      border-right: var(--border-w) solid var(--black);
-      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      /* Striped background overlay */
-      background-image: repeating-linear-gradient(45deg,
-          rgba(255, 255, 255, 0.15) 0px,
-          rgba(255, 255, 255, 0.15) 10px,
-          transparent 10px,
-          transparent 20px);
-      background-size: 28px 28px;
-      animation: stripeScroll 2s linear infinite;
-    }
-
-    @keyframes stripeScroll {
-      0% {
-        background-position: 0 0;
-      }
-
-      100% {
-        background-position: 28px 0;
-      }
-    }
-
-    /* Bottom Split */
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-    }
-
-    @media (max-width: 768px) {
-      .bottom-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .form-bento {
-      background: var(--yellow);
-    }
-
-    .log-bento {
-      background: var(--white);
-    }
-
-    /* Form */
-    .form-row {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-lbl {
-      display: block;
-      font-weight: 900;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .form-ctrl {
-      width: 100%;
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 6px);
-      padding: 1.2rem;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 1.1rem;
-      background: var(--white);
-      box-shadow: 6px 6px 0px var(--black);
-      transition: box-shadow 0.2s var(--spring), transform 0.2s var(--spring);
-      -webkit-appearance: none;
-    }
-
-    .form-ctrl:focus {
-      outline: none;
-      transform: translate(2px, 2px);
-      box-shadow: 4px 4px 0px var(--black);
-    }
-
-    .log-btn {
-      width: 100%;
-      background: var(--red);
-      color: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      padding: 1.2rem;
-      font-family: inherit;
-      font-weight: 900;
-      font-size: 1.3rem;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-      cursor: pointer;
-      box-shadow: 8px 8px 0px var(--black);
-      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-      margin-top: 1rem;
-    }
-
-    .log-btn:hover:not(:disabled) {
-      transform: translate(-2px, -2px);
-      box-shadow: 10px 10px 0px var(--black);
-    }
-
-    .log-btn:active {
-      transform: translate(6px, 6px) !important;
-      box-shadow: 0px 0px 0px var(--black) !important;
-      transition: transform 0.05s, box-shadow 0.05s;
-    }
-
-    .log-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: 8px 8px 0px var(--black);
-    }
-
-    /* Activity Log */
-    .activity-scroll {
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 1rem;
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      padding: 1.5rem;
-      background: var(--bg-alabaster);
-    }
-
-    .activity-scroll::-webkit-scrollbar {
-      width: 12px;
-    }
-
-    .activity-scroll::-webkit-scrollbar-track {
-      background: var(--bg-alabaster);
-      border-left: var(--border-w) solid var(--black);
-      border-radius: 0 calc(var(--br) - 4px) calc(var(--br) - 4px) 0;
-    }
-
-    .activity-scroll::-webkit-scrollbar-thumb {
-      background: var(--black);
-      border-radius: 6px;
-      border: 3px solid var(--bg-alabaster);
-    }
-
-    .log-entry {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
-      font-weight: 700;
-      box-shadow: 6px 6px 0px var(--black);
-      font-size: 1.1rem;
-    }
-
-    .log-entry:last-child {
-      margin-bottom: 0;
-    }
-
-    .log-hrs {
-      color: var(--red);
-      font-weight: 900;
-    }
-
-    .log-ts {
-      font-size: 0.9rem;
-      display: block;
-      margin-top: 0.5rem;
-      font-weight: 600;
-      opacity: 0.8;
-    }
-
-    .log-empty {
-      text-align: center;
-      font-weight: 900;
-      font-size: 1.3rem;
-      padding: 3rem;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      top: 2rem;
-      right: 2rem;
-      background: var(--teal);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      box-shadow: 8px 8px 0px var(--black);
-      padding: 1.5rem;
-      font-weight: 900;
-      font-size: 1.2rem;
-      z-index: 1000;
-      transform: translateX(150%);
-      transition: transform 0.4s var(--spring);
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-    }
-
-    .toast.show {
-      transform: translateX(0);
-    }
-
-    /* Overlays */
-    .winner-overlay,
-    .settings-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(249, 249, 246, 0.98);
-      z-index: 2000;
-      display: flex;
-      opacity: 0;
-      pointer-events: none;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      backdrop-filter: blur(4px);
-      transition: opacity 0.3s ease;
-    }
-
-    .winner-overlay.show,
-    .settings-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .winner-box,
-    .settings-box {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: var(--br);
-      box-shadow: 8px 8px 0px var(--black);
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow-y: auto;
-      transform: scale(0.95);
-      transition: transform 0.3s var(--spring);
-    }
-    .settings-overlay.show .settings-box { transform: scale(1); }
-
-    .settings-box {
-      background: var(--bg-alabaster);
-      padding: 2.5rem;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow-y: auto;
-      text-align: left;
-    }
-
-    .winner-ship {
-      font-size: 5rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .winner-headline {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      line-height: 1;
-      letter-spacing: -0.04em;
-    }
-
-    .winner-sub {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 2.5rem;
-      letter-spacing: -0.02em;
-    }
-
-    .winner-dismiss {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      padding: 1.2rem 2.5rem;
-      font-family: inherit;
-      font-weight: 900;
-      font-size: 1.3rem;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-      cursor: pointer;
-      box-shadow: 8px 8px 0px var(--black);
-      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-    }
-
-    .winner-dismiss:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 10px 10px 0px var(--black);
-    }
-
-    .winner-dismiss:active {
-      transform: translate(6px, 6px) !important;
-      box-shadow: 0px 0px 0px var(--black) !important;
-      transition: transform 0.05s, box-shadow 0.05s;
-    }
-
-    /* Settings Modal Specifics */
-    .settings-box .bento-title {
-      margin-bottom: 2rem;
-    }
-
-    .crew-card {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: var(--br);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      box-shadow: 6px 6px 0px var(--black);
-    }
-
-    .crew-row {
-      display: flex;
-      gap: 0.8rem;
-      align-items: center;
-    }
-
-    .crew-row input,
-    .crew-member-row input {
-      flex: 1;
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 8px);
-      padding: 0.8rem;
-      font-family: inherit;
-      font-weight: 700;
-      min-width: 0;
-      box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.05);
-    }
-
-    .crew-row .ship-inp {
-      flex: 0 0 70px;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-
-    .crew-row .color-inp {
-      flex: 0 0 70px;
-      padding: 0;
-      height: 52px;
-      cursor: pointer;
-    }
-
-    .crew-row .del-btn,
-    .del-m-btn,
-    .add-m-btn {
-      background: var(--red);
-      color: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 8px);
-      font-weight: 900;
-      padding: 0.8rem;
-      cursor: pointer;
-      height: 52px;
-      transition: transform 0.2s var(--spring), box-shadow 0.2s var(--spring);
-      box-shadow: 4px 4px 0px var(--black);
-    }
-
-    .del-m-btn {
-      padding: 0 1rem !important;
-    }
-
-    .add-m-btn {
-      background: var(--teal);
-      height: auto;
-      padding: 0.5rem 1rem;
-      width: fit-content;
-      margin-top: 1rem !important;
-    }
-
-    .crew-row .del-btn:active,
-    .del-m-btn:active,
-    .add-m-btn:active {
-      transform: translate(2px, 2px) !important;
-      box-shadow: 0px 0px 0px var(--black) !important;
-      transition: transform 0.05s, box-shadow 0.05s;
-    }
-
-    .log-entry-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .delete-log-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 1.4rem;
-      opacity: 0.5;
-      transition: opacity 0.2s, transform 0.2s var(--spring);
-    }
-
-    .delete-log-btn:hover {
-      opacity: 1;
-      transform: scale(1.2);
-    }
-
-    .settings-actions {
-      display: flex;
-      gap: 1.5rem;
-      margin-top: 3rem;
-    }
-
-    .settings-actions button {
-      flex: 1;
-      padding: 1.2rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      cursor: pointer;
-      box-shadow: 6px 6px 0px var(--black);
-      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-    }
-
-    .settings-actions button.save-btn {
-      background: var(--teal);
-    }
-
-    .settings-actions button.add-btn {
-      background: var(--magenta);
-      color: var(--white);
-    }
-
-    .settings-actions button.cancel-btn {
-      background: var(--white);
-    }
-
-    .settings-actions button:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 8px 8px 0px var(--black);
-    }
-
-    .settings-actions button:active {
-      transform: translate(4px, 4px) !important;
-      box-shadow: 0px 0px 0px var(--black) !important;
-      transition: transform 0.05s, box-shadow 0.05s;
-    }
-
-    @media (max-width: 600px) {
-      .crew-row {
-        flex-wrap: wrap;
-      }
-
-      .settings-actions {
-        flex-direction: column;
-      }
-    }
-
-    /* Rules Section */
-    .rules-bento {
-      background: var(--bg-alabaster);
-    }
-
-    .rules-list {
-      list-style-type: none;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      font-size: 1.15rem;
-      font-weight: 600;
-    }
-
-    .rules-list li {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) - 4px);
-      padding: 1.5rem;
-      box-shadow: 6px 6px 0px var(--black);
-      line-height: 1.5;
-    }
-
-    .rules-list li strong {
-      font-weight: 900;
-      color: var(--magenta);
-      text-transform: uppercase;
-      margin-right: 0.5rem;
-      letter-spacing: -0.02em;
-    }
-
-    #toggleDayBtn {
-      border: var(--border-w) solid var(--black) !important;
-      border-radius: calc(var(--br) - 4px);
-      box-shadow: 6px 6px 0px var(--black) !important;
-      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring) !important;
-      padding: 0.8rem !important;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
-    }
-
-    #toggleDayBtn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 8px 8px 0px var(--black) !important;
-    }
-
-    #toggleDayBtn:active {
-      transform: translate(4px, 4px) !important;
-      box-shadow: 0px 0px 0px var(--black) !important;
-      transition: transform 0.05s, box-shadow 0.05s !important;
-    }
-
-    /* Mobile Optimization */
-    @media (max-width: 768px) {
-      .bottom-nav.keyboard-open {
-        display: none !important;
-      }
-      /* Bottom Nav Bar */
-      .bottom-nav {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: calc(64px + env(safe-area-inset-bottom));
-        padding-bottom: env(safe-area-inset-bottom);
-        background: var(--white);
-        border-top: var(--border-w) solid var(--black);
-        z-index: 1000;
-        box-shadow: 0 -4px 0px rgba(0,0,0,1);
-      }
-      .nav-item {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: none;
-        border-right: var(--border-w) solid var(--black);
-        font-family: inherit;
-        font-weight: 900;
-        font-size: 0.75rem;
-        cursor: pointer;
-        color: var(--black);
-        text-transform: uppercase;
-        letter-spacing: -0.02em;
-      }
-      .nav-item:last-child {
-        border-right: none;
-      }
-      .nav-item.active {
-        background: var(--yellow);
-      }
-      .nav-icon {
-        font-size: 1.5rem;
-        margin-bottom: 2px;
-      }
-
-      input, select, .form-ctrl, .m-name-inp, .m-goal-inp {
-        font-size: 16px !important;
-      }
-      /* Mobile Grid Collapse */
-      .container {
-        flex-direction: column;
-        gap: 1rem !important;
-        padding: 0 0.5rem;
-      }
-      .sidebar, .main-content {
-        width: 100%;
-        gap: 1rem !important;
-      }
-      
-      /* Strict Mobile Tab System */
-      .hidden-tab { display: none !important; }
-      .rules-bento { display: none !important; }
-
-      .map-inner {
-        width: 1200px !important;
-        min-width: 1200px;
-      }
-      .bento {
-        padding: 1rem !important;
-      }
-      .header-bento {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        position: relative;
-        padding: 1.5rem 1rem !important;
-      }
-      .settings-btn {
-        position: absolute !important;
-        top: 1rem !important;
-        right: 1rem !important;
-        font-size: 1.2rem !important;
-        padding: 0.4rem !important;
-        box-shadow: 2px 2px 0px var(--black) !important;
-      }
-      .stats-grid {
-        gap: 0.5rem !important;
-      }
-      .stat-box {
-        padding: 0.75rem !important;
-        gap: 0.5rem !important;
-        font-size: 0.85rem !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        text-align: center !important;
-      }
-      .day-box > div:first-child {
-        flex-direction: column !important;
-        gap: 0.25rem !important;
-        justify-content: center !important;
-      }
-      .day-btn {
-        padding: 0.2rem 0.5rem !important;
-        font-size: 0.8rem !important;
-      }
-      #toggleDayBtn {
-        font-size: 0.7rem !important;
-        padding: 4px !important;
-      }
-      .header-bento h1 {
-        font-size: 1.7rem !important;
-        padding-right: 2.5rem;
-      }
-      .header-bento p {
-        font-size: 0.8rem !important;
-      }
-      .bento-title {
-        font-size: 1.25rem !important;
-      }
-      .card-hours {
-        font-size: 1.8rem !important;
-      }
-      .stat-box {
-        font-size: 1rem !important;
-      }
-      
-      
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      /* Native App Modals Fullscreen */
-      .winner-overlay, .settings-overlay {
-        align-items: flex-end;
-        padding: 0;
-      }
-      .settings-box, .winner-box {
-        width: 100vw;
-        height: 100dvh;
-        max-height: 100dvh;
-        border-radius: 0;
-        border: none;
-        border-top: var(--border-w) solid var(--black);
-        transform: translateY(100%);
-        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
-      }
-      .settings-overlay.show .settings-box, .winner-overlay.show .winner-box {
-        transform: translateY(0);
-      }
-
-      .container {
-        gap: 1rem;
-        padding: 0 0.5rem;
-      }
-
-      .bento {
-        padding: 1.5rem 1rem;
-      }
-
-      
-
-      .map-bento {
-        padding: 1.5rem 0;
-      }
-
-      .map-bento .bento-title {
-        margin: 0 1rem 1rem 1rem;
-        font-size: 1.5rem;
-      }
-
-      .bento-title {
-        font-size: 1.5rem;
-      }
-
-      .team-card {
-        padding: 1.5rem 1rem;
-      }
-
-      .settings-box {
-        padding: 1.5rem 1rem;
-        width: 95%;
-        max-height: 95vh;
-        border-radius: var(--br);
-      }
-
-      .settings-box .bento-title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .winner-box {
-      background: var(--white);
-      border: var(--border-w) solid var(--black);
-      border-radius: var(--br);
-      box-shadow: 12px 12px 0px var(--black);
-      padding: 4rem 2rem;
-      text-align: center;
-      max-width: 600px;
-      width: 100%;
-      transform: scale(0.95);
-      transition: transform 0.3s var(--spring);
-    }
-    .winner-overlay.show .winner-box { transform: scale(1); }
-
-      .rules-list li {
-        padding: 1rem;
-      }
-
-      .stat-box {
-        padding: 1rem;
-        font-size: 1.1rem;
-      }
-
-      .card-name {
-        font-size: 1.3rem;
-      }
-
-      .card-hours {
-        font-size: 2rem;
-      }
-
-      .form-ctrl,
-      .log-btn {
-        padding: 1rem;
-      }
-
-      .winner-overlay,
-      .settings-overlay {
-        padding: 1rem;
-      }
-
-      .toast {
-        top: 1rem;
-        right: 1rem;
-        left: 1rem;
-        text-align: center;
-        padding: 1rem;
-        font-size: 1rem;
-      }
-
-      .settings-btn {
-        top: 1rem;
-        right: 1rem;
-      }
-
-      .crew-row {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .crew-row .ship-inp,
-      .crew-row .color-inp {
-        height: 44px;
-        flex: unset;
-      }
-
-      .crew-row .del-btn {
-        height: 44px;
-        padding: 0.5rem;
-      }
-      .del-m-btn {
-        min-width: 44px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .crew-member-row {
-        gap: 1rem !important;
-      }
-
-      .crew-member-row {
-        flex-wrap: wrap;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      .team-cards-grid {
-        grid-template-columns: 1fr;
-      }
-
-      
-      .map-inner {
-        width: 1200px !important;
-        min-width: 1200px;
-      }
-      .rules-bento {
-        display: none !important;
-      }
-      .header-bento {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem !important;
-      }
-      .settings-btn {
-        position: static !important;
-      }
-      .stats-grid {
-        gap: 0.5rem !important;
-      }
-      .bento {
-        padding: 1rem !important;
-      }
-      .container {
-        gap: 1rem !important;
-      }
-      .header-bento h1 {
-        font-size: 2rem !important;
-      }
-      .header-bento p {
-        font-size: 0.9rem !important;
-      }
-      .bento-title {
-        font-size: 1.25rem !important;
-      }
-      .card-hours {
-        font-size: 1.8rem !important;
-      }
-      .stat-box {
-        font-size: 1rem !important;
-      }
-
-      /* Prevent map horizontal scroll blowout */
-      .map-scroll {
-        width: 100%;
-        max-width: 100vw;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-x: contain;
-      }
+    :root{--bg-alabaster:#F9F9F6;--black:#0F0F0F;--white:#FFFFFF;--teal:#2EC4B6;--magenta:#E71D36;--yellow:#FF9F1C;--red:#D90429;--border-w:4px;--br:12px;--spring:cubic-bezier(.175,.885,.32,1.275);--map-path:path('M 60 250 L 1140 250');--bg-beige:var(--bg-alabaster)}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;max-width:100vw;overflow-x:hidden;position:relative}
+    body{background:var(--bg-alabaster);color:var(--black);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh;line-height:1.6;padding:0}
+    body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.25;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")}
+    input,select,button{min-height:48px}
+    .challenge-ended-banner{background:var(--red);color:var(--white);text-align:center;font-weight:900;font-size:clamp(1rem,3vw,1.5rem);padding:1rem;border-bottom:var(--border-w) solid var(--black);text-transform:uppercase;letter-spacing:-.03em;display:none}
+    .challenge-ended-banner.show{display:block}
+
+    /* === DASHBOARD GRID === */
+    .container{display:grid;grid-template-columns:350px 1fr;gap:2rem;max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+    .sidebar{display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto}
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--black);border-radius:3px}
+    .main-content{display:flex;flex-direction:column;gap:2rem;min-width:0}
+
+    /* === BENTO BASE === */
+    .bento{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:6px 6px 0px var(--black);padding:2rem;position:relative;min-width:0}
+    .bento-title{font-size:clamp(1.25rem,2.5vw,2rem);font-weight:900;text-transform:uppercase;letter-spacing:-.03em;border-bottom:var(--border-w) solid var(--black);padding-bottom:.5rem;display:inline-block;color:inherit;line-height:1.1}
+
+    /* === HEADER === */
+    .header-bento{background:var(--yellow);padding:1.5rem 2rem}
+    .header-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+    .header-bento h1{font-size:clamp(1.8rem,4vw,3.5rem);font-weight:900;text-transform:uppercase;letter-spacing:-.04em;line-height:1}
+    .header-bento p{font-size:clamp(.85rem,1.5vw,1.2rem);font-weight:700;margin-top:.5rem;letter-spacing:-.02em}
+    .settings-btn{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);font-size:1.5rem;padding:.5rem;cursor:pointer;box-shadow:4px 4px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring);flex-shrink:0}
+    .settings-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--black)}
+    .settings-btn:active{transform:translate(4px,4px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+
+    /* === STATS === */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .stat-box{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:6px 6px 0px var(--black);padding:1rem;display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:clamp(.85rem,1.2vw,1.15rem);letter-spacing:-.02em}
+    .stat-box.teal{background:var(--teal)}
+    .stat-box.magenta{background:var(--magenta);color:var(--white)}
+    .stat-box.red{background:var(--red);color:var(--white)}
+    .day-btn{background:transparent;border:none;color:inherit;font-size:1.2rem;cursor:pointer;padding:0 4px;transition:transform .2s var(--spring)}
+    .day-btn:hover{transform:scale(1.3)}
+    .day-btn:active{transform:scale(.9);transition:transform .05s}
+    #toggleDayBtn{border:var(--border-w) solid var(--black)!important;border-radius:calc(var(--br) - 4px);box-shadow:4px 4px 0px var(--black)!important;transition:transform .3s var(--spring),box-shadow .3s var(--spring)!important;padding:.6rem!important;font-size:.9rem;letter-spacing:-.02em}
+    #toggleDayBtn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--black)!important}
+    #toggleDayBtn:active{transform:translate(4px,4px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s!important}
+
+    /* === MAP === */
+    .map-bento{background:var(--teal);padding:2rem 0}
+    .map-bento .bento-title{margin:0 2rem 1.5rem 2rem;color:var(--black)}
+    .map-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:var(--border-w) solid var(--black);border-bottom:var(--border-w) solid var(--black);background:var(--bg-alabaster)}
+    .map-scroll::-webkit-scrollbar{height:14px}
+    .map-scroll::-webkit-scrollbar-track{background:var(--bg-alabaster);border-top:var(--border-w) solid var(--black)}
+    .map-scroll::-webkit-scrollbar-thumb{background:var(--black);border:3px solid var(--bg-alabaster)}
+    .map-inner{position:relative;min-width:1200px;width:1200px;height:600px;margin:0 auto}
+    .map-svg{position:absolute;top:0;left:0;width:100%;height:100%}
+    .waypoint{position:absolute;left:0;top:0;offset-path:var(--map-path);offset-rotate:0deg;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:5}
+    .waypoint-icon{width:24px;height:24px;background:var(--yellow);border:var(--border-w) solid var(--black);border-radius:50%}
+    .end-icon{background:var(--red);width:36px;height:36px}
+    .waypoint-text{position:absolute;top:100%;margin-top:2px;font-weight:900;text-transform:uppercase;background:var(--white);border:var(--border-w) solid var(--black);border-radius:8px;padding:4px 10px;font-size:.85rem;letter-spacing:-.02em;white-space:nowrap;box-shadow:2px 2px 0px var(--black)}
+    .ship-unit{position:absolute;left:0;top:0;offset-rotate:0deg;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-50% + var(--scatter-y,0px)));z-index:10;transition:offset-distance .4s var(--spring),transform .2s;width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:var(--ship-color,var(--white));border:var(--border-w) solid var(--black);border-radius:50%;font-size:1.8rem;box-shadow:4px 4px 0px var(--black);cursor:pointer}
+    .ship-unit::after{content:'';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid var(--black);z-index:-1}
+    .ship-unit:hover{z-index:100!important;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-55% + var(--scatter-y,0px))) scale(1.1);box-shadow:6px 6px 0px var(--black)}
+    .ship-pct{position:absolute;top:100%;margin-top:15px;font-size:.85rem;font-weight:900;background:var(--white);border:2px solid var(--black);border-radius:6px;padding:2px 6px;color:var(--black);line-height:1;box-shadow:2px 2px 0px var(--black);pointer-events:none;white-space:nowrap}
+
+    /* === LEADERBOARD === */
+    .leaderboard-bento{background:var(--magenta)}
+    .leaderboard-bento .bento-title{color:var(--white);text-shadow:3px 3px 0px var(--black)}
+    .team-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem}
+    .team-card{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:8px 8px 0px var(--black);padding:2rem 1.5rem;text-align:center;position:relative;transition:transform .3s var(--spring),box-shadow .3s var(--spring)}
+    .team-card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--black)}
+    .rank-badge{position:absolute;top:-12px;right:-12px;background:var(--yellow);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);font-weight:900;font-size:1.4rem;padding:6px 14px;box-shadow:4px 4px 0px var(--black);letter-spacing:-.02em}
+    .card-ship{font-size:3.5rem;margin-bottom:.5rem;display:block}
+    .card-name{font-weight:900;font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:-.03em;line-height:1.1}
+    .card-members{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;border-radius:calc(var(--br) - 6px)}
+    .card-hours{font-size:clamp(1.6rem,2.5vw,2.5rem);font-weight:900;letter-spacing:-.04em}
+    .prog-bar-container{width:100%;height:28px;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);background:var(--bg-alabaster);margin-top:1.5rem;position:relative;overflow:hidden;box-shadow:inset 3px 3px 6px rgba(0,0,0,.1)}
+    .prog-fill{height:100%;background:var(--fill-color,var(--teal));border-right:var(--border-w) solid var(--black);transition:width .6s cubic-bezier(.34,1.56,.64,1);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.15) 0px,rgba(255,255,255,.15) 10px,transparent 10px,transparent 20px);background-size:28px 28px;animation:stripeScroll 2s linear infinite}
+    @keyframes stripeScroll{0%{background-position:0 0}100%{background-position:28px 0}}
+
+    /* === FORM === */
+    .form-bento{background:var(--yellow)}
+    .form-row{margin-bottom:1.25rem}
+    .form-lbl{display:block;font-weight:900;margin-bottom:.5rem;text-transform:uppercase;font-size:1rem;letter-spacing:-.02em}
+    .form-ctrl{width:100%;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 6px);padding:1rem;font-family:inherit;font-weight:700;font-size:1rem;background:var(--white);box-shadow:6px 6px 0px var(--black);transition:box-shadow .2s var(--spring),transform .2s var(--spring);-webkit-appearance:none}
+    .form-ctrl:focus{outline:none;transform:translate(2px,2px);box-shadow:4px 4px 0px var(--black)}
+    .log-btn{width:100%;background:var(--red);color:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1rem;font-family:inherit;font-weight:900;font-size:1.2rem;text-transform:uppercase;letter-spacing:-.02em;cursor:pointer;box-shadow:8px 8px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring);margin-top:.75rem}
+    .log-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:10px 10px 0px var(--black)}
+    .log-btn:active{transform:translate(6px,6px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+    .log-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:8px 8px 0px var(--black)}
+
+    /* === ACTIVITY LOG === */
+    .log-bento{background:var(--white)}
+    .activity-scroll{max-height:500px;overflow-y:auto;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.5rem;background:var(--bg-alabaster)}
+    .activity-scroll::-webkit-scrollbar{width:10px}
+    .activity-scroll::-webkit-scrollbar-track{background:var(--bg-alabaster);border-left:var(--border-w) solid var(--black)}
+    .activity-scroll::-webkit-scrollbar-thumb{background:var(--black);border-radius:5px;border:2px solid var(--bg-alabaster)}
+    .log-entry{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.2rem;margin-bottom:1.25rem;font-weight:700;box-shadow:6px 6px 0px var(--black);font-size:1.05rem}
+    .log-entry:last-child{margin-bottom:0}
+    .log-entry-header{display:flex;justify-content:space-between;align-items:flex-start}
+    .log-hrs{color:var(--red);font-weight:900}
+    .log-ts{font-size:.9rem;display:block;margin-top:.5rem;font-weight:600;opacity:.8}
+    .log-empty{text-align:center;font-weight:900;font-size:1.2rem;padding:3rem;text-transform:uppercase;letter-spacing:-.02em}
+    .delete-log-btn{background:transparent;border:none;cursor:pointer;font-size:1.4rem;opacity:.5;transition:opacity .2s,transform .2s var(--spring);min-height:auto}
+    .delete-log-btn:hover{opacity:1;transform:scale(1.2)}
+
+    /* === TOAST === */
+    .toast{position:fixed;top:2rem;right:2rem;background:var(--teal);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);box-shadow:8px 8px 0px var(--black);padding:1.5rem;font-weight:900;font-size:1.2rem;z-index:1000;transform:translateX(150%);transition:transform .4s var(--spring);text-transform:uppercase;letter-spacing:-.02em}
+    .toast.show{transform:translateX(0)}
+
+    /* === OVERLAYS === */
+    .winner-overlay,.settings-overlay{position:fixed;inset:0;background:rgba(249,249,246,.98);z-index:2000;display:flex;opacity:0;pointer-events:none;align-items:center;justify-content:center;padding:2rem;backdrop-filter:blur(4px);transition:opacity .3s ease}
+    .winner-overlay.show,.settings-overlay.show{opacity:1;pointer-events:auto}
+    .winner-box,.settings-box{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:8px 8px 0px var(--black);padding:2.5rem;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .3s var(--spring)}
+    .settings-overlay.show .settings-box{transform:scale(1)}
+    .winner-box{box-shadow:12px 12px 0px var(--black);padding:4rem 2rem;text-align:center;max-width:600px}
+    .winner-overlay.show .winner-box{transform:scale(1)}
+    .settings-box{background:var(--bg-alabaster);text-align:left}
+    .settings-box .bento-title{margin-bottom:2rem}
+    .winner-ship{font-size:5rem;margin-bottom:1rem;display:block}
+    .winner-headline{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;text-transform:uppercase;margin-bottom:1rem;line-height:1;letter-spacing:-.04em}
+    .winner-sub{font-size:1.6rem;font-weight:700;margin-bottom:2.5rem;letter-spacing:-.02em}
+    .winner-dismiss{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.2rem 2.5rem;font-family:inherit;font-weight:900;font-size:1.3rem;text-transform:uppercase;letter-spacing:-.02em;cursor:pointer;box-shadow:8px 8px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring)}
+    .winner-dismiss:hover{transform:translate(-2px,-2px);box-shadow:10px 10px 0px var(--black)}
+    .winner-dismiss:active{transform:translate(6px,6px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+
+    /* === SETTINGS MODAL === */
+    .crew-card{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);padding:1.5rem;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:6px 6px 0px var(--black)}
+    .crew-row{display:flex;gap:.8rem;align-items:center}
+    .crew-row input,.crew-member-row input{flex:1;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 8px);padding:.8rem;font-family:inherit;font-weight:700;min-width:0;box-shadow:inset 2px 2px 0 rgba(0,0,0,.05)}
+    .crew-row .ship-inp{flex:0 0 70px;text-align:center;font-size:1.5rem}
+    .crew-row .color-inp{flex:0 0 70px;padding:0;height:52px;cursor:pointer}
+    .crew-row .del-btn,.del-m-btn,.add-m-btn{background:var(--red);color:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 8px);font-weight:900;padding:.8rem;cursor:pointer;height:52px;transition:transform .2s var(--spring),box-shadow .2s var(--spring);box-shadow:4px 4px 0px var(--black)}
+    .del-m-btn{padding:0 1rem!important}
+    .add-m-btn{background:var(--teal);height:auto;padding:.5rem 1rem;width:fit-content;margin-top:1rem!important}
+    .crew-row .del-btn:active,.del-m-btn:active,.add-m-btn:active{transform:translate(2px,2px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+    .settings-actions{display:flex;gap:1.5rem;margin-top:3rem}
+    .settings-actions button{flex:1;padding:1.2rem;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);cursor:pointer;box-shadow:6px 6px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring)}
+    .settings-actions button.save-btn{background:var(--teal)}
+    .settings-actions button.add-btn{background:var(--magenta);color:var(--white)}
+    .settings-actions button.cancel-btn{background:var(--white)}
+    .settings-actions button:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0px var(--black)}
+    .settings-actions button:active{transform:translate(4px,4px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+
+    /* === RULES === */
+    .rules-bento{background:var(--bg-alabaster)}
+    .rules-list{list-style-type:none;display:flex;flex-direction:column;gap:1.25rem;font-size:1.1rem;font-weight:600}
+    .rules-list li{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.25rem;box-shadow:6px 6px 0px var(--black);line-height:1.5}
+    .rules-list li strong{font-weight:900;color:var(--magenta);text-transform:uppercase;margin-right:.5rem;letter-spacing:-.02em}
+
+    /* === BOTTOM NAV (hidden on desktop) === */
+    .bottom-nav{display:none}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:none;border:none;border-right:var(--border-w) solid var(--black);font-family:inherit;font-weight:900;font-size:.75rem;cursor:pointer;color:var(--black);text-transform:uppercase;letter-spacing:-.02em;transition:background .15s}
+    .nav-item:last-child{border-right:none}
+    .nav-item.active{background:var(--yellow)}
+    .nav-icon{font-size:1.5rem;margin-bottom:2px}
+
+    /* === MOBILE TAB SYSTEM === */
+    .hidden-tab{display:none!important}
+
+    /* === MOBILE === */
+    @media(max-width:768px){
+      body{padding:0 0 calc(70px + env(safe-area-inset-bottom)) 0}
+      .container{grid-template-columns:1fr;gap:.75rem;padding:.5rem}
+      .sidebar,.main-content{display:contents}
+      .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--white);border-top:var(--border-w) solid var(--black);z-index:1000;box-shadow:0 -4px 0 rgba(0,0,0,1)}
+      .bottom-nav.keyboard-open{display:none!important}
+      .bento{padding:1.25rem!important}
+      .header-bento{padding:1.25rem!important}
+      .stats-grid{gap:.5rem}
+      .stat-box{padding:.75rem;font-size:.85rem;flex-direction:column;text-align:center;gap:.3rem}
+      .map-bento{padding:1.25rem 0}
+      .map-bento .bento-title{margin:0 1rem 1rem 1rem}
+      .map-inner{min-width:1200px!important;width:1200px!important}
+      .map-scroll{max-width:100vw;overscroll-behavior-x:contain}
+      .team-cards-grid{grid-template-columns:1fr}
+      .rules-bento{display:none!important}
+      input,select,.form-ctrl,.m-name-inp,.m-goal-inp{font-size:16px!important}
+      .toast{top:1rem;right:1rem;left:1rem;text-align:center;padding:1rem;font-size:1rem}
+      .winner-overlay,.settings-overlay{padding:1rem}
+      .settings-box{width:95%;max-height:95vh;padding:1.5rem 1rem}
+      .crew-row{flex-direction:column;align-items:stretch}
+      .crew-row .ship-inp,.crew-row .color-inp{flex:unset;height:44px}
+      .crew-row .del-btn{height:44px;padding:.5rem}
+      .del-m-btn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+      .crew-member-row{flex-wrap:wrap;gap:.75rem!important}
+      .settings-actions{flex-direction:column}
     }
   </style>
 </head>
-
 <body>
 
   <div class="challenge-ended-banner" id="challengeEndedBanner">CHALLENGE ENDED</div>
@@ -1377,18 +252,25 @@
     </div>
   </div>
 
+  <!-- ========== DASHBOARD ========== -->
   <div class="container">
-    <div id="tab-map">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
 
       <!-- Header -->
-      <header class="bento header-bento">
-        <h1>Grand Line Race</h1>
-        <p>ONE PIECE STUDY TRACKER</p>
-        <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
+      <header class="bento header-bento" id="bento-header">
+        <div class="header-inner">
+          <div>
+            <h1>Grand Line Race</h1>
+            <p>ONE PIECE STUDY TRACKER</p>
+          </div>
+          <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
+        </div>
       </header>
 
       <!-- Stats Grid -->
-      <div class="stats-grid">
+      <div class="stats-grid" id="bento-stats">
         <div class="stat-box teal">
           <span>🕐</span> <span id="clockEl">--:--:--</span>
         </div>
@@ -1410,54 +292,9 @@
         </div>
       </div>
 
-      <!-- Map -->
-      <section class="bento map-bento">
-        <h2 class="bento-title">The Grand Line Track</h2>
-        <div class="map-scroll">
-          <div class="map-inner">
-            <!-- The parallel twisted routes spaced 50px apart -->
-            <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
-              <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-
-              <!-- MAIN TRACK -->
-              <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
-
-              <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-            </svg>
-
-            <!-- Lore-Accurate Waypoints -->
-            <div class="waypoint" style="offset-distance: 0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
-            <div class="waypoint" style="offset-distance: 12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
-            <div class="waypoint" style="offset-distance: 25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
-            <div class="waypoint" style="offset-distance: 37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
-            <div class="waypoint" style="offset-distance: 50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
-            <div class="waypoint" style="offset-distance: 62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
-            <div class="waypoint" style="offset-distance: 75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
-            <div class="waypoint" style="offset-distance: 87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
-            <div class="waypoint" style="offset-distance: 100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
-
-            <!-- Ships Container -->
-            <div id="shipsTrack"></div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- Leaderboard -->
-    <section class="bento leaderboard-bento" id="tab-leaderboard">
-      <h2 class="bento-title">Leaderboard</h2>
-      <div class="team-cards-grid" id="teamCardsGrid"></div>
-    </section>
-
-    <!-- Bottom: Form & Log -->
-    <div class="bottom-grid" id="tab-log-container">
-
+      <!-- Log Hours Form -->
       <div class="bento form-bento" id="tab-log">
         <h2 class="bento-title">Log Hours</h2>
-
         <div class="form-row">
           <label class="form-lbl" for="teamSel">Choose Your Crew</label>
           <select class="form-ctrl" id="teamSel"></select>
@@ -1473,6 +310,47 @@
         <button class="log-btn" id="logBtn">Set Sail!</button>
       </div>
 
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- Map -->
+      <div id="tab-map">
+        <section class="bento map-bento">
+          <h2 class="bento-title">The Grand Line Track</h2>
+          <div class="map-scroll">
+            <div class="map-inner">
+              <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
+                <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+                <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+                <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
+                <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+                <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+                <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              </svg>
+              <div class="waypoint" style="offset-distance: 0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
+              <div class="waypoint" style="offset-distance: 12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
+              <div class="waypoint" style="offset-distance: 25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
+              <div class="waypoint" style="offset-distance: 37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
+              <div class="waypoint" style="offset-distance: 50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
+              <div class="waypoint" style="offset-distance: 62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
+              <div class="waypoint" style="offset-distance: 75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
+              <div class="waypoint" style="offset-distance: 87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
+              <div class="waypoint" style="offset-distance: 100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
+              <div id="shipsTrack"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Leaderboard -->
+      <section class="bento leaderboard-bento" id="tab-leaderboard">
+        <h2 class="bento-title">Leaderboard</h2>
+        <div class="team-cards-grid" id="teamCardsGrid"></div>
+      </section>
+
+      <!-- Captain's Log -->
       <div class="bento log-bento" id="tab-activity" style="display:flex; flex-direction:column;">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
           <h2 class="bento-title" style="border:none; margin:0; padding:0;">Captain's Log</h2>
@@ -1485,20 +363,22 @@
         </div>
       </div>
 
-    </div>
+      <!-- Rules -->
+      <section class="bento rules-bento">
+        <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
+        <ul class="rules-list">
+          <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
+          <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
+          <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
+          <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
+          <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
+        </ul>
+      </section>
 
-    <!-- Rules Section -->
-    <section class="bento rules-bento">
-      <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
-      <ul class="rules-list">
-        <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
-        <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
-        <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
-        <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
-        <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
-      </ul>
-    </section>
-  </div>\n\n  <script type="module">
+    </main>
+  </div>
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, setDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
@@ -2299,20 +1179,20 @@
   </script>
 
   <!-- Mobile Bottom Nav -->
-  <nav class="bottom-nav" id="bottomNav" style="display: none;">
-    <button class="nav-item active" onclick="switchTab('map', event)">
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-tab="map">
       <span class="nav-icon">🗺️</span>
       <span>Map</span>
     </button>
-    <button class="nav-item" onclick="switchTab('leaderboard', event)">
+    <button class="nav-item" data-tab="leaderboard">
       <span class="nav-icon">🏆</span>
       <span>Rank</span>
     </button>
-    <button class="nav-item" onclick="switchTab('log', event)">
+    <button class="nav-item" data-tab="log">
       <span class="nav-icon">✍️</span>
-      <span>Log Hours</span>
+      <span>Log</span>
     </button>
-    <button class="nav-item" onclick="switchTab('activity', event)">
+    <button class="nav-item" data-tab="activity">
       <span class="nav-icon">📜</span>
       <span>Crew Logs</span>
     </button>
@@ -2320,70 +1200,56 @@
 
   <script>
     // Tab switching logic for mobile
+    const TAB_MAP = {
+      map: ['bento-header', 'bento-stats', 'tab-map'],
+      leaderboard: ['tab-leaderboard'],
+      log: ['tab-log'],
+      activity: ['tab-activity']
+    };
+    const ALL_TAB_IDS = ['bento-header', 'bento-stats', 'tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
+
     window.switchTab = function(tab, event) {
-      if(event) {
-        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+      if (event) {
+        document.querySelectorAll('.nav-item').forEach(function(btn) { btn.classList.remove('active'); });
         event.currentTarget.classList.add('active');
       }
-
-      // Hide all sub-components safely via CSS class
-      const elementsToHide = ['bento-header', 'bento-stats', 'tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
-      elementsToHide.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) {
-          el.classList.add('hidden-tab');
-          // clear inline styles if any exist
-          el.style.display = '';
-        }
+      ALL_TAB_IDS.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) { el.classList.add('hidden-tab'); el.style.display = ''; }
       });
+      var show = TAB_MAP[tab] || [];
+      show.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.remove('hidden-tab');
+      });
+    };
 
-      if(tab === 'map') {
-        document.getElementById('bento-header').classList.remove('hidden-tab');
-        document.getElementById('bento-stats').classList.remove('hidden-tab');
-        document.getElementById('tab-map').classList.remove('hidden-tab');
-      }
-      if(tab === 'leaderboard') {
-        document.getElementById('tab-leaderboard').classList.remove('hidden-tab');
-      }
-      if(tab === 'log') {
-        document.getElementById('tab-log').classList.remove('hidden-tab');
-      }
-      if(tab === 'activity') {
-        document.getElementById('tab-activity').classList.remove('hidden-tab');
-      }
-      
-      // Update body for mobile layout
-      document.body.style.overflowX = 'hidden';
-    }
+    // Wire up nav buttons
+    document.querySelectorAll('.nav-item[data-tab]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        switchTab(btn.dataset.tab, e);
+      });
+    });
 
-    // Handle Android Keyboard Jump
-    const bottomNav = document.getElementById('bottomNav');
+    // Handle Android Keyboard
+    var bottomNav = document.getElementById('bottomNav');
     if (bottomNav) {
-      document.body.addEventListener('focus', (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-          if (window.innerWidth <= 768) bottomNav.classList.add('keyboard-open');
+      document.body.addEventListener('focus', function(e) {
+        if ((e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') && window.innerWidth <= 768) {
+          bottomNav.classList.add('keyboard-open');
         }
       }, true);
-      document.body.addEventListener('blur', (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-          if (window.innerWidth <= 768) bottomNav.classList.remove('keyboard-open');
+      document.body.addEventListener('blur', function(e) {
+        if ((e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') && window.innerWidth <= 768) {
+          bottomNav.classList.remove('keyboard-open');
         }
       }, true);
     }
-    
-    // Check if mobile and show bottom nav
-    if(window.innerWidth <= 768) {
-      document.getElementById('bottomNav').style.display = 'flex';
-      // Set default state safely
-      document.getElementById('bento-header').classList.add('hidden-tab');
-      document.getElementById('bento-stats').classList.add('hidden-tab');
-      document.getElementById('tab-map').classList.add('hidden-tab');
-      document.getElementById('tab-leaderboard').classList.add('hidden-tab');
-      document.getElementById('tab-log').classList.add('hidden-tab');
-      document.getElementById('tab-activity').classList.add('hidden-tab');
-      window.switchTab('map', null);
+
+    // Init mobile view
+    if (window.innerWidth <= 768) {
+      switchTab('map', null);
     }
   </script>
 </body>
-
 </html>
