@@ -1032,10 +1032,10 @@
       }
       /* Hide Bentos by default on mobile */
       .hidden-tab { display: none !important; }
-      .map-bento, .leaderboard-bento, .bottom-grid {
+      #tab-map, .leaderboard-bento, .bottom-grid {
         display: none !important; 
       }
-      .map-bento.active-tab, .leaderboard-bento.active-tab, .bottom-grid.active-tab {
+      #tab-map.active-tab, .leaderboard-bento.active-tab, .bottom-grid.active-tab {
         display: block !important;
         animation: fadeIn 0.3s ease;
       }
@@ -1073,9 +1073,7 @@
         padding: 1.5rem 1rem;
       }
 
-      .header-bento {
-        padding: 4.5rem 1rem 2rem 1rem;
-      }
+      
 
       .map-bento {
         padding: 1.5rem 0;
@@ -1198,6 +1196,49 @@
         grid-template-columns: 1fr;
       }
 
+      
+      .map-inner {
+        width: 1200px !important;
+        min-width: 1200px;
+      }
+      .rules-bento {
+        display: none !important;
+      }
+      .header-bento {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem !important;
+      }
+      .settings-btn {
+        position: static !important;
+      }
+      .stats-grid {
+        gap: 0.5rem !important;
+      }
+      .bento {
+        padding: 1rem !important;
+      }
+      .container {
+        gap: 1rem !important;
+      }
+      .header-bento h1 {
+        font-size: 2rem !important;
+      }
+      .header-bento p {
+        font-size: 0.9rem !important;
+      }
+      .bento-title {
+        font-size: 1.25rem !important;
+      }
+      .card-hours {
+        font-size: 1.8rem !important;
+      }
+      .stat-box {
+        font-size: 1rem !important;
+      }
+
       /* Prevent map horizontal scroll blowout */
       .map-scroll {
         width: 100%;
@@ -1268,6 +1309,7 @@
   </div>
 
   <div class="container">
+  <div id="tab-map">
 
     <!-- Header -->
     <header class="bento header-bento">
@@ -1301,9 +1343,8 @@
         <span>🎯</span> ALL CREWS TODAY: <span id="globalGoalsEl">0</span> HRS
       </div>
     </div>
-
     <!-- Map -->
-    <section class="bento map-bento" id="tab-map">
+    <section class="bento map-bento">
       <h2 class="bento-title">The Grand Line Track</h2>
 
       <div class="map-scroll">
@@ -1360,6 +1401,7 @@
         </div>
       </div>
     </section>
+  </div>
 
     <!-- Leaderboard -->
     <section class="bento leaderboard-bento" id="tab-leaderboard">
