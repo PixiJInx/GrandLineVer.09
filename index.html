@@ -1030,15 +1030,57 @@
       input, select, .form-ctrl, .m-name-inp, .m-goal-inp {
         font-size: 16px !important;
       }
-      /* Hide Bentos by default on mobile */
+      /* Mobile Grid Collapse */
+      .container {
+        flex-direction: column;
+        gap: 1rem !important;
+        padding: 0 0.5rem;
+      }
+      .sidebar, .main-content {
+        width: 100%;
+        gap: 1rem !important;
+      }
+      
+      /* Strict Mobile Tab System */
       .hidden-tab { display: none !important; }
-      #tab-map, .leaderboard-bento, .bottom-grid {
-        display: none !important; 
+      .rules-bento { display: none !important; }
+
+      .map-inner {
+        width: 1200px !important;
+        min-width: 1200px;
       }
-      #tab-map.active-tab, .leaderboard-bento.active-tab, .bottom-grid.active-tab {
-        display: block !important;
-        animation: fadeIn 0.3s ease;
+      .bento {
+        padding: 1rem !important;
       }
+      .header-bento {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem !important;
+      }
+      .settings-btn {
+        position: static !important;
+      }
+      .stats-grid {
+        gap: 0.5rem !important;
+      }
+      .header-bento h1 {
+        font-size: 2rem !important;
+      }
+      .header-bento p {
+        font-size: 0.9rem !important;
+      }
+      .bento-title {
+        font-size: 1.25rem !important;
+      }
+      .card-hours {
+        font-size: 1.8rem !important;
+      }
+      .stat-box {
+        font-size: 1rem !important;
+      }
+      
       
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
@@ -1309,112 +1351,38 @@
   </div>
 
   <div class="container">
-  <div id="tab-map">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <header class="bento header-bento" id="bento-header">
+        <h1>Grand Line Race</h1>
+        <p>ONE PIECE STUDY TRACKER</p>
+        <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
+      </header>
 
-    <!-- Header -->
-    <header class="bento header-bento">
-      <h1>Grand Line Race</h1>
-      <p>ONE PIECE STUDY TRACKER</p>
-      <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
-    </header>
-
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-box teal">
-        <span>🕐</span> <span id="clockEl">--:--:--</span>
-      </div>
-      <div class="stat-box magenta day-box"
-        style="flex-direction: column; align-items: stretch; gap: 0.5rem; justify-content: center;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div><span>📅</span> DAY <span id="dayEl" style="margin: 0 4px;">1</span> OF 7</div>
-          <div>
-            <button class="day-btn" id="prevDayBtn" title="Previous Day">◀</button>
-            <button class="day-btn" id="nextDayBtn" title="Next Day">▶</button>
-          </div>
+      <div class="stats-grid" id="bento-stats">
+        <div class="stat-box teal">
+          <span>🕐</span> <span id="clockEl">--:--:--</span>
         </div>
-        <button id="toggleDayBtn"
-          style="background: var(--yellow); border: 2px solid var(--black); font-weight: 900; font-family: inherit; padding: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 2px 2px 0px var(--black);">START
-          DAY 1</button>
-      </div>
-      <div class="stat-box red">
-        <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
-      </div>
-      <div class="stat-box" style="font-size: 1rem;">
-        <span>🎯</span> ALL CREWS TODAY: <span id="globalGoalsEl">0</span> HRS
-      </div>
-    </div>
-    <!-- Map -->
-    <section class="bento map-bento">
-      <h2 class="bento-title">The Grand Line Track</h2>
-
-      <div class="map-scroll">
-        <div class="map-inner">
-          <!-- The parallel twisted routes spaced 50px apart -->
-          <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
-            <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
-              opacity="0.2" />
-            <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
-              opacity="0.2" />
-
-            <!-- MAIN TRACK -->
-            <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
-
-            <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
-              opacity="0.2" />
-            <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
-              opacity="0.2" />
-            <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
-              opacity="0.2" />
-          </svg>
-
-          <!-- Lore-Accurate Waypoints -->
-          <div class="waypoint" style="offset-distance: 0%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span>
+        <div class="stat-box magenta day-box" style="flex-direction: column; align-items: stretch; gap: 0.5rem; justify-content: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><span>📅</span> DAY <span id="dayEl" style="margin: 0 4px;">1</span> OF 7</div>
+            <div>
+              <button class="day-btn" id="prevDayBtn" title="Previous Day">◀</button>
+              <button class="day-btn" id="nextDayBtn" title="Next Day">▶</button>
+            </div>
           </div>
-          <div class="waypoint" style="offset-distance: 12.5%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 25%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 37.5%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 50%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 62.5%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 75%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 87.5%">
-            <div class="waypoint-icon"></div><span class="waypoint-text">Wano</span>
-          </div>
-          <div class="waypoint" style="offset-distance: 100%">
-            <div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span>
-          </div>
-
-          <!-- Ships Container -->
-          <div id="shipsTrack"></div>
+          <button id="toggleDayBtn" style="background: var(--yellow); border: 2px solid var(--black); font-weight: 900; font-family: inherit; padding: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 2px 2px 0px var(--black);">START DAY 1</button>
+        </div>
+        <div class="stat-box red">
+          <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
+        </div>
+        <div class="stat-box" style="font-size: 1rem;">
+          <span>🎯</span> ALL CREWS TODAY: <span id="globalGoalsEl">0</span> HRS
         </div>
       </div>
-    </section>
-  </div>
-
-    <!-- Leaderboard -->
-    <section class="bento leaderboard-bento" id="tab-leaderboard">
-      <h2 class="bento-title">Leaderboard</h2>
-      <div class="team-cards-grid" id="teamCardsGrid"></div>
-    </section>
-
-    <!-- Bottom: Form & Log -->
-    <div class="bottom-grid" id="tab-log-container">
 
       <div class="bento form-bento" id="tab-log">
         <h2 class="bento-title">Log Hours</h2>
-
         <div class="form-row">
           <label class="form-lbl" for="teamSel">Choose Your Crew</label>
           <select class="form-ctrl" id="teamSel"></select>
@@ -1430,12 +1398,55 @@
         <button class="log-btn" id="logBtn">Set Sail!</button>
       </div>
 
+      <section class="bento rules-bento" id="bento-rules">
+        <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
+        <ul class="rules-list">
+          <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
+          <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
+          <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
+          <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
+          <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
+        </ul>
+      </section>
+    </aside>
+
+    <!-- Right Main Area -->
+    <main class="main-content">
+      <section class="bento map-bento" id="tab-map">
+        <h2 class="bento-title">The Grand Line Track</h2>
+        <div class="map-scroll">
+          <div class="map-inner">
+            <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
+              <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
+              <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+            </svg>
+            <div class="waypoint" style="offset-distance: 0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
+            <div class="waypoint" style="offset-distance: 12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
+            <div class="waypoint" style="offset-distance: 25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
+            <div class="waypoint" style="offset-distance: 37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
+            <div class="waypoint" style="offset-distance: 50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
+            <div class="waypoint" style="offset-distance: 62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
+            <div class="waypoint" style="offset-distance: 75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
+            <div class="waypoint" style="offset-distance: 87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
+            <div class="waypoint" style="offset-distance: 100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
+            <div id="shipsTrack"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bento leaderboard-bento" id="tab-leaderboard">
+        <h2 class="bento-title">Leaderboard</h2>
+        <div class="team-cards-grid" id="teamCardsGrid"></div>
+      </section>
+
       <div class="bento log-bento" id="tab-activity" style="display:flex; flex-direction:column;">
-        <div
-          style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
           <h2 class="bento-title" style="border:none; margin:0; padding:0;">Captain's Log</h2>
-          <select id="logTeamFilter"
-            style="border: 2px solid var(--black); font-weight:700; padding:0.2rem; font-family:inherit; max-width:150px; cursor:pointer;">
+          <select id="logTeamFilter" style="border: 2px solid var(--black); font-weight:700; padding:0.2rem; font-family:inherit; max-width:150px; cursor:pointer;">
             <option value="ALL">All Crews (Activity)</option>
           </select>
         </div>
@@ -1443,25 +1454,7 @@
           <div class="log-empty">No voyages logged yet.</div>
         </div>
       </div>
-
-    </div>
-
-    <!-- Rules Section -->
-    <section class="bento rules-bento">
-      <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
-      <ul class="rules-list">
-        <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours
-          daily!</li>
-        <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
-        <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!
-        </li>
-        <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base
-          daily goal.</li>
-        <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One
-          Piece!</li>
-      </ul>
-    </section>
-
+    </main>
   </div>
 
   <script type="module">
@@ -2292,25 +2285,29 @@
         event.currentTarget.classList.add('active');
       }
 
-      document.getElementById('tab-map').classList.remove('active-tab');
-      document.getElementById('tab-leaderboard').classList.remove('active-tab');
-      document.getElementById('tab-log-container').classList.remove('active-tab');
+      // Hide all sub-components safely via CSS class
+      const elementsToHide = ['bento-header', 'bento-stats', 'tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
+      elementsToHide.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+          el.classList.add('hidden-tab');
+          // clear inline styles if any exist
+          el.style.display = '';
+        }
+      });
 
-      // Hide sub-tabs cleanly
-      document.getElementById('tab-log').classList.add('hidden-tab');
-      document.getElementById('tab-activity').classList.add('hidden-tab');
-      // Ensure any leftover inline styles from old logic are cleared
-      document.getElementById('tab-log').style.display = '';
-      document.getElementById('tab-activity').style.display = 'flex'; // Reset flex
-
-      if(tab === 'map') document.getElementById('tab-map').classList.add('active-tab');
-      if(tab === 'leaderboard') document.getElementById('tab-leaderboard').classList.add('active-tab');
+      if(tab === 'map') {
+        document.getElementById('bento-header').classList.remove('hidden-tab');
+        document.getElementById('bento-stats').classList.remove('hidden-tab');
+        document.getElementById('tab-map').classList.remove('hidden-tab');
+      }
+      if(tab === 'leaderboard') {
+        document.getElementById('tab-leaderboard').classList.remove('hidden-tab');
+      }
       if(tab === 'log') {
-        document.getElementById('tab-log-container').classList.add('active-tab');
         document.getElementById('tab-log').classList.remove('hidden-tab');
       }
       if(tab === 'activity') {
-        document.getElementById('tab-log-container').classList.add('active-tab');
         document.getElementById('tab-activity').classList.remove('hidden-tab');
       }
       
@@ -2336,6 +2333,13 @@
     // Check if mobile and show bottom nav
     if(window.innerWidth <= 768) {
       document.getElementById('bottomNav').style.display = 'flex';
+      // Set default state safely
+      document.getElementById('bento-header').classList.add('hidden-tab');
+      document.getElementById('bento-stats').classList.add('hidden-tab');
+      document.getElementById('tab-map').classList.add('hidden-tab');
+      document.getElementById('tab-leaderboard').classList.add('hidden-tab');
+      document.getElementById('tab-log').classList.add('hidden-tab');
+      document.getElementById('tab-activity').classList.add('hidden-tab');
       window.switchTab('map', null);
     }
   </script>
