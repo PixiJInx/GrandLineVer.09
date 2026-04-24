@@ -1378,15 +1378,17 @@
   </div>
 
   <div class="container">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-      <header class="bento header-bento" id="bento-header">
+    <div id="tab-map">
+
+      <!-- Header -->
+      <header class="bento header-bento">
         <h1>Grand Line Race</h1>
         <p>ONE PIECE STUDY TRACKER</p>
         <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
       </header>
 
-      <div class="stats-grid" id="bento-stats">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
         <div class="stat-box teal">
           <span>🕐</span> <span id="clockEl">--:--:--</span>
         </div>
@@ -1408,8 +1410,54 @@
         </div>
       </div>
 
+      <!-- Map -->
+      <section class="bento map-bento">
+        <h2 class="bento-title">The Grand Line Track</h2>
+        <div class="map-scroll">
+          <div class="map-inner">
+            <!-- The parallel twisted routes spaced 50px apart -->
+            <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
+              <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+
+              <!-- MAIN TRACK -->
+              <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
+
+              <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+              <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+            </svg>
+
+            <!-- Lore-Accurate Waypoints -->
+            <div class="waypoint" style="offset-distance: 0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
+            <div class="waypoint" style="offset-distance: 12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
+            <div class="waypoint" style="offset-distance: 25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
+            <div class="waypoint" style="offset-distance: 37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
+            <div class="waypoint" style="offset-distance: 50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
+            <div class="waypoint" style="offset-distance: 62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
+            <div class="waypoint" style="offset-distance: 75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
+            <div class="waypoint" style="offset-distance: 87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
+            <div class="waypoint" style="offset-distance: 100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
+
+            <!-- Ships Container -->
+            <div id="shipsTrack"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Leaderboard -->
+    <section class="bento leaderboard-bento" id="tab-leaderboard">
+      <h2 class="bento-title">Leaderboard</h2>
+      <div class="team-cards-grid" id="teamCardsGrid"></div>
+    </section>
+
+    <!-- Bottom: Form & Log -->
+    <div class="bottom-grid" id="tab-log-container">
+
       <div class="bento form-bento" id="tab-log">
         <h2 class="bento-title">Log Hours</h2>
+
         <div class="form-row">
           <label class="form-lbl" for="teamSel">Choose Your Crew</label>
           <select class="form-ctrl" id="teamSel"></select>
@@ -1425,51 +1473,6 @@
         <button class="log-btn" id="logBtn">Set Sail!</button>
       </div>
 
-      <section class="bento rules-bento" id="bento-rules">
-        <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
-        <ul class="rules-list">
-          <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
-          <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
-          <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
-          <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
-          <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
-        </ul>
-      </section>
-    </aside>
-
-    <!-- Right Main Area -->
-    <main class="main-content">
-      <section class="bento map-bento" id="tab-map">
-        <h2 class="bento-title">The Grand Line Track</h2>
-        <div class="map-scroll">
-          <div class="map-inner">
-            <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
-              <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
-              <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-            </svg>
-            <div class="waypoint" style="offset-distance: 0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
-            <div class="waypoint" style="offset-distance: 12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
-            <div class="waypoint" style="offset-distance: 25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
-            <div class="waypoint" style="offset-distance: 37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
-            <div class="waypoint" style="offset-distance: 50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
-            <div class="waypoint" style="offset-distance: 62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
-            <div class="waypoint" style="offset-distance: 75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
-            <div class="waypoint" style="offset-distance: 87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
-            <div class="waypoint" style="offset-distance: 100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
-            <div id="shipsTrack"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="bento leaderboard-bento" id="tab-leaderboard">
-        <h2 class="bento-title">Leaderboard</h2>
-        <div class="team-cards-grid" id="teamCardsGrid"></div>
-      </section>
-
       <div class="bento log-bento" id="tab-activity" style="display:flex; flex-direction:column;">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
           <h2 class="bento-title" style="border:none; margin:0; padding:0;">Captain's Log</h2>
@@ -1481,10 +1484,21 @@
           <div class="log-empty">No voyages logged yet.</div>
         </div>
       </div>
-    </main>
-  </div>
 
-  <script type="module">
+    </div>
+
+    <!-- Rules Section -->
+    <section class="bento rules-bento">
+      <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
+      <ul class="rules-list">
+        <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
+        <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
+        <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
+        <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
+        <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
+      </ul>
+    </section>
+  </div>\n\n  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, setDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
