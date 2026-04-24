@@ -751,6 +751,11 @@
       text-transform: uppercase;
       margin-right: 0.5rem;
     }
+
+    #toggleDayBtn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0px 0px 0px var(--black) !important;
+    }
   </style>
 </head>
 
@@ -777,6 +782,19 @@
   <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-box">
       <h2 class="bento-title">Captain's Quarters</h2>
+      
+      <div class="day-settings-section" style="background: var(--white); border: var(--border-w) solid var(--black); padding: 1rem; margin-bottom: 1.5rem; box-shadow: 4px 4px 0px var(--black);">
+        <h3 style="font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--black);">Voyage Settings</h3>
+        <div style="display: flex; gap: 1rem; align-items: center; color: var(--black);">
+          <label style="font-weight: 700;">Set Current Day (1-7):</label>
+          <input type="number" id="currentDayInp" min="1" max="7" style="border: 2px solid var(--black); padding: 0.5rem; font-weight: 700; width: 80px;">
+        </div>
+        <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8; font-weight: 600; color: var(--black);">
+          * Use this to manually adjust the ongoing day.
+        </div>
+      </div>
+
+      <h3 style="font-weight: 900; margin-bottom: 1rem; text-transform: uppercase; font-size: 1.5rem; color: var(--black);">Crew Rosters</h3>
       <div id="teamsEditor"></div>
       <div class="settings-actions">
         <button class="add-btn" id="addCrewBtn">Add Crew</button>
@@ -800,10 +818,15 @@
       <div class="stat-box teal">
         <span>🕐</span> <span id="clockEl">--:--:--</span>
       </div>
-      <div class="stat-box magenta day-box">
-        <span>📅</span> DAY
-        <span id="dayEl">1</span>
-        OF 7
+      <div class="stat-box magenta day-box" style="flex-direction: column; align-items: stretch; gap: 0.5rem; justify-content: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div><span>📅</span> DAY <span id="dayEl" style="margin: 0 4px;">1</span> OF 7</div>
+          <div>
+            <button class="day-btn" id="prevDayBtn" title="Previous Day">◀</button>
+            <button class="day-btn" id="nextDayBtn" title="Next Day">▶</button>
+          </div>
+        </div>
+        <button id="toggleDayBtn" style="background: var(--yellow); border: 2px solid var(--black); font-weight: 900; font-family: inherit; padding: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 2px 2px 0px var(--black);">START DAY 1</button>
       </div>
       <div class="stat-box red">
         <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
@@ -936,21 +959,13 @@
     const db = getFirestore(app);
     const raceDocRef = doc(db, 'raceData/currentRace');
 
-    // Define challenge start date
-    const CHALLENGE_START = new Date("2026-04-23T00:00:00").getTime();
-
-    const DEFAULT_TEAMS = [
-      { id: 'straw', name: 'Straw Hats', ship: '🏴‍☠️', color: '#E93D3D', members: 'Luffy & Zoro', weeklyGoal: 49 },
-      { id: 'heart', name: 'Heart Pirates', ship: '⚓', color: '#3DCCC7', members: 'Law & Bepo', weeklyGoal: 42 },
-      { id: 'fire', name: 'Fire Fist Crew', ship: '🔥', color: '#FFD600', members: 'Ace & Sabo', weeklyGoal: 56 },
-      { id: 'warlrd', name: 'Warlord Alliance', ship: '⚔️', color: '#FF4081', members: 'Mihawk & Doflamingo', weeklyGoal: 45.5 },
-      { id: 'sky', name: 'Sky Pirates', ship: '☁️', color: '#111111', members: 'Shanks & Rayleigh', weeklyGoal: 35 },
-    ];
-
     let state = {
       teams: [...DEFAULT_TEAMS],
       dailyHours: {},
-      log: []
+      log: [],
+      currentDay: 1,
+      dayActive: false,
+      dayStartTime: null
     };
 
     function getWeeklyGoal(team) {
@@ -967,10 +982,16 @@
     }
 
     function getCurrentDay() {
-      const now = Date.now();
-      const diff = now - CHALLENGE_START;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
-      return Math.max(1, days);
+      return state.currentDay || 1;
+    }
+
+    function changeManualDay(delta) {
+      let current = getCurrentDay();
+      let newDay = current + delta;
+      if (newDay < 1) newDay = 1;
+      if (newDay > 7) newDay = 7;
+      state.currentDay = newDay;
+      saveState();
     }
 
     function getDailyGoal(teamId, day) {
@@ -1013,6 +1034,9 @@
       if (docSnap.exists()) {
         const data = docSnap.data();
         state.teams = data.teams || [...DEFAULT_TEAMS];
+        state.currentDay = data.currentDay || 1;
+        state.dayActive = data.dayActive || false;
+        state.dayStartTime = data.dayStartTime || null;
         if (data.dailyHours) {
           state.dailyHours = data.dailyHours;
         } else if (data.hours) {
@@ -1056,6 +1080,23 @@
       document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
       document.getElementById('winnerDismissBtn').addEventListener('click', () => document.getElementById('winnerOverlay').classList.remove('show'));
 
+      document.getElementById('prevDayBtn').addEventListener('click', () => changeManualDay(-1));
+      document.getElementById('nextDayBtn').addEventListener('click', () => changeManualDay(1));
+
+      document.getElementById('toggleDayBtn').addEventListener('click', async () => {
+        if (!state.dayActive) {
+          state.dayActive = true;
+          state.dayStartTime = Date.now();
+        } else {
+          if (confirm(`Are you sure you want to end Day ${state.currentDay} and move to Day ${state.currentDay + 1}?`)) {
+            state.dayActive = false;
+            state.currentDay++;
+            state.dayStartTime = null;
+          }
+        }
+        await saveState();
+      });
+
       document.addEventListener('keydown', e => {
         if (e.key === 'Enter' && (e.target.id === 'hrsInp' || e.target.id === 'nameInp')) logHours();
       });
@@ -1070,12 +1111,30 @@
     }
 
     function updateClock() {
-      const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      document.getElementById('clockEl').textContent =
-        `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      if (state.dayActive && state.dayStartTime) {
+        const elapsed = Date.now() - state.dayStartTime;
+        const totalSec = Math.floor(elapsed / 1000);
+        const h = Math.floor(totalSec / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('clockEl').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+      } else {
+        document.getElementById('clockEl').textContent = `00:00:00`;
+      }
 
       const day = getCurrentDay();
+      
+      const toggleBtn = document.getElementById('toggleDayBtn');
+      if (state.dayActive) {
+        toggleBtn.textContent = `END DAY ${day}`;
+        toggleBtn.style.background = 'var(--red)';
+        toggleBtn.style.color = 'var(--white)';
+      } else {
+        toggleBtn.textContent = `START DAY ${day}`;
+        toggleBtn.style.background = 'var(--yellow)';
+        toggleBtn.style.color = 'var(--black)';
+      }
 
       if (day > 7) {
         document.getElementById('dayEl').textContent = '7';
@@ -1296,6 +1355,7 @@ function renderLog(){
       state.teams.forEach((t, i) => {
         container.appendChild(createTeamRow(t, i));
       });
+      document.getElementById('currentDayInp').value = state.currentDay || 1;
       document.getElementById('settingsOverlay').classList.add('show');
     }
 
@@ -1360,6 +1420,11 @@ function renderLog(){
       }
 
       state.teams = newTeams;
+
+      const dayVal = document.getElementById('currentDayInp').value;
+      if (dayVal && !isNaN(parseInt(dayVal))) {
+        state.currentDay = parseInt(dayVal);
+      }
 
       // Initialize daily hours if missing for any team for today
       const day = getCurrentDay();
