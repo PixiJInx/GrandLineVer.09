@@ -3,7 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#F9F9F6">
   <title>Grand Line Race — One Piece Study Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap"
     rel="stylesheet">
@@ -19,7 +22,7 @@
       --border-w: 4px;
       --br: 12px;
       --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      
+
       /* The straight map route */
       --map-path: path('M 60 250 L 1140 250');
     }
@@ -32,12 +35,20 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      position: relative;
+    }
+
     body {
       background-color: var(--bg-alabaster);
       color: var(--black);
       font-family: 'Space Grotesk', system-ui, sans-serif;
       min-height: 100vh;
-      padding: 0 0 4rem 0;
+      padding: 0 0 calc(80px + env(safe-area-inset-bottom)) 0;
       overflow-x: hidden;
       line-height: 1.6;
     }
@@ -229,6 +240,12 @@
       border-top: var(--border-w) solid var(--black);
       border-bottom: var(--border-w) solid var(--black);
       background: var(--bg-alabaster);
+      touch-action: pan-y; /* allow custom horizontal pan JS */
+      cursor: grab;
+    }
+    
+    input, select, button {
+      min-height: 48px;
     }
 
     .map-scroll::-webkit-scrollbar {
@@ -249,7 +266,8 @@
     .map-inner {
       position: relative;
       width: 1200px;
-      height: 600px; /* Increased from 500px */
+      height: 600px;
+      /* Increased from 500px */
       margin: 0 auto;
     }
 
@@ -313,13 +331,11 @@
       top: 0;
       offset-rotate: 0deg;
       /* We add CSS variables for the scatter effect so they don't overlap perfectly */
-      transform: translate(
-        calc(-50% + var(--scatter-x, 0px)), 
-        calc(-50% + var(--scatter-y, 0px))
-      );
+      transform: translate(calc(-50% + var(--scatter-x, 0px)),
+          calc(-50% + var(--scatter-y, 0px)));
       z-index: 10;
       transition: offset-distance 0.4s var(--spring), transform 0.2s;
-      
+
       /* The Token Look */
       width: 54px;
       height: 54px;
@@ -346,14 +362,12 @@
       border-top: 10px solid var(--black);
       z-index: -1;
     }
-    
+
     /* Small hover effect so you can pop them to the top if they are clustered */
     .ship-unit:hover {
       z-index: 100 !important;
-      transform: translate(
-        calc(-50% + var(--scatter-x, 0px)), 
-        calc(-55% + var(--scatter-y, 0px))
-      ) scale(1.1);
+      transform: translate(calc(-50% + var(--scatter-x, 0px)),
+          calc(-55% + var(--scatter-y, 0px))) scale(1.1);
       box-shadow: 6px 6px 0px var(--black);
     }
 
@@ -457,7 +471,7 @@
       margin-top: 1.5rem;
       position: relative;
       overflow: hidden;
-      box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1);
+      box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.1);
     }
 
     .prog-fill {
@@ -466,20 +480,23 @@
       border-right: var(--border-w) solid var(--black);
       transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       /* Striped background overlay */
-      background-image: repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.15) 0px,
-        rgba(255, 255, 255, 0.15) 10px,
-        transparent 10px,
-        transparent 20px
-      );
+      background-image: repeating-linear-gradient(45deg,
+          rgba(255, 255, 255, 0.15) 0px,
+          rgba(255, 255, 255, 0.15) 10px,
+          transparent 10px,
+          transparent 20px);
       background-size: 28px 28px;
       animation: stripeScroll 2s linear infinite;
     }
 
     @keyframes stripeScroll {
-      0% { background-position: 0 0; }
-      100% { background-position: 28px 0; }
+      0% {
+        background-position: 0 0;
+      }
+
+      100% {
+        background-position: 28px 0;
+      }
     }
 
     /* Bottom Split */
@@ -663,33 +680,41 @@
     /* Overlays */
     .winner-overlay,
     .settings-overlay {
-      display: none;
       position: fixed;
       inset: 0;
       background: rgba(249, 249, 246, 0.98);
       z-index: 2000;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
       align-items: center;
       justify-content: center;
       padding: 2rem;
       backdrop-filter: blur(4px);
+      transition: opacity 0.3s ease;
     }
 
     .winner-overlay.show,
     .settings-overlay.show {
-      display: flex;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .winner-box,
     .settings-box {
-      background: var(--yellow);
+      background: var(--white);
       border: var(--border-w) solid var(--black);
-      border-radius: calc(var(--br) * 1.5);
-      box-shadow: 16px 16px 0px var(--black);
-      padding: 4rem 2rem;
-      max-width: 600px;
+      border-radius: var(--br);
+      box-shadow: 8px 8px 0px var(--black);
+      padding: 2.5rem;
       width: 100%;
-      text-align: center;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.3s var(--spring);
     }
+    .settings-overlay.show .settings-box { transform: scale(1); }
 
     .settings-box {
       background: var(--bg-alabaster);
@@ -771,7 +796,8 @@
       align-items: center;
     }
 
-    .crew-row input, .crew-member-row input {
+    .crew-row input,
+    .crew-member-row input {
       flex: 1;
       border: var(--border-w) solid var(--black);
       border-radius: calc(var(--br) - 8px);
@@ -779,7 +805,7 @@
       font-family: inherit;
       font-weight: 700;
       min-width: 0;
-      box-shadow: inset 2px 2px 0 rgba(0,0,0,0.05);
+      box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.05);
     }
 
     .crew-row .ship-inp {
@@ -795,7 +821,9 @@
       cursor: pointer;
     }
 
-    .crew-row .del-btn, .del-m-btn, .add-m-btn {
+    .crew-row .del-btn,
+    .del-m-btn,
+    .add-m-btn {
       background: var(--red);
       color: var(--white);
       border: var(--border-w) solid var(--black);
@@ -820,7 +848,9 @@
       margin-top: 1rem !important;
     }
 
-    .crew-row .del-btn:active, .del-m-btn:active, .add-m-btn:active {
+    .crew-row .del-btn:active,
+    .del-m-btn:active,
+    .add-m-btn:active {
       transform: translate(2px, 2px) !important;
       box-shadow: 0px 0px 0px var(--black) !important;
       transition: transform 0.05s, box-shadow 0.05s;
@@ -903,7 +933,7 @@
     .rules-bento {
       background: var(--bg-alabaster);
     }
-    
+
     .rules-list {
       list-style-type: none;
       display: flex;
@@ -953,61 +983,164 @@
 
     /* Mobile Optimization */
     @media (max-width: 768px) {
+      /* Bottom Nav Bar */
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: calc(64px + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom);
+        background: var(--white);
+        border-top: var(--border-w) solid var(--black);
+        z-index: 1000;
+        box-shadow: 0 -4px 0px rgba(0,0,0,1);
+      }
+      .nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        border-right: var(--border-w) solid var(--black);
+        font-family: inherit;
+        font-weight: 900;
+        font-size: 0.75rem;
+        cursor: pointer;
+        color: var(--black);
+        text-transform: uppercase;
+        letter-spacing: -0.02em;
+      }
+      .nav-item:last-child {
+        border-right: none;
+      }
+      .nav-item.active {
+        background: var(--yellow);
+      }
+      .nav-icon {
+        font-size: 1.5rem;
+        margin-bottom: 2px;
+      }
+
+      /* Hide Bentos by default on mobile */
+      .map-bento, .leaderboard-bento, .bottom-grid {
+        display: none !important; 
+      }
+      .map-bento.active-tab, .leaderboard-bento.active-tab, .bottom-grid.active-tab {
+        display: block !important;
+        animation: fadeIn 0.3s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Native App Modals Fullscreen */
+      .winner-overlay, .settings-overlay {
+        align-items: flex-end;
+        padding: 0;
+      }
+      .settings-box, .winner-box {
+        width: 100vw;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        border: none;
+        border-top: var(--border-w) solid var(--black);
+        transform: translateY(100%);
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+      }
+      .settings-overlay.show .settings-box, .winner-overlay.show .winner-box {
+        transform: translateY(0);
+      }
+
       .container {
         gap: 1rem;
         padding: 0 0.5rem;
       }
+
       .bento {
         padding: 1.5rem 1rem;
       }
+
       .header-bento {
         padding: 2.5rem 1rem;
       }
+
       .map-bento {
         padding: 1.5rem 0;
       }
+
       .map-bento .bento-title {
         margin: 0 1rem 1rem 1rem;
         font-size: 1.5rem;
       }
+
       .bento-title {
         font-size: 1.5rem;
       }
+
       .team-card {
         padding: 1.5rem 1rem;
       }
+
       .settings-box {
         padding: 1.5rem 1rem;
         width: 95%;
         max-height: 95vh;
         border-radius: var(--br);
       }
+
       .settings-box .bento-title {
         font-size: 1.5rem;
         margin-bottom: 1rem;
       }
+
       .winner-box {
-        padding: 2rem 1rem;
-      }
+      background: var(--white);
+      border: var(--border-w) solid var(--black);
+      border-radius: var(--br);
+      box-shadow: 12px 12px 0px var(--black);
+      padding: 4rem 2rem;
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      transform: scale(0.95);
+      transition: transform 0.3s var(--spring);
+    }
+    .winner-overlay.show .winner-box { transform: scale(1); }
+
       .rules-list li {
         padding: 1rem;
       }
+
       .stat-box {
         padding: 1rem;
         font-size: 1.1rem;
       }
+
       .card-name {
         font-size: 1.3rem;
       }
+
       .card-hours {
         font-size: 2rem;
       }
-      .form-ctrl, .log-btn {
+
+      .form-ctrl,
+      .log-btn {
         padding: 1rem;
       }
-      .winner-overlay, .settings-overlay {
+
+      .winner-overlay,
+      .settings-overlay {
         padding: 1rem;
       }
+
       .toast {
         top: 1rem;
         right: 1rem;
@@ -1016,28 +1149,37 @@
         padding: 1rem;
         font-size: 1rem;
       }
+
       .settings-btn {
         top: 1rem;
         right: 1rem;
       }
+
       .crew-row {
         flex-direction: column;
         align-items: stretch;
       }
-      .crew-row .ship-inp, .crew-row .color-inp {
+
+      .crew-row .ship-inp,
+      .crew-row .color-inp {
         height: 44px;
         flex: unset;
       }
+
       .crew-row .del-btn {
         height: 44px;
         padding: 0.5rem;
       }
+
       .crew-member-row {
         flex-wrap: wrap;
       }
-      .stats-grid, .team-cards-grid {
+
+      .stats-grid,
+      .team-cards-grid {
         grid-template-columns: 1fr;
       }
+
       /* Prevent map horizontal scroll blowout */
       .map-scroll {
         width: 100%;
@@ -1060,7 +1202,9 @@
       <span class="winner-ship" id="winnerShipBig">🏴‍☠️</span>
       <div class="winner-headline">ONE PIECE FOUND!</div>
       <div class="winner-sub" id="winnerSubText">The Straw Hats claim the treasure!</div>
-      <p id="winnerDebugText" style="font-size: 1.1rem; font-weight: 900; color: var(--black); margin-top: 1rem; margin-bottom: 1.5rem; background: var(--bg-alabaster); border: 2px dashed var(--black); padding: 0.5rem; display: inline-block;"></p><br>
+      <p id="winnerDebugText"
+        style="font-size: 1.1rem; font-weight: 900; color: var(--black); margin-top: 1rem; margin-bottom: 1.5rem; background: var(--bg-alabaster); border: 2px dashed var(--black); padding: 0.5rem; display: inline-block;">
+      </p><br>
       <button class="winner-dismiss" id="winnerDismissBtn">
         BACK TO START
       </button>
@@ -1071,19 +1215,24 @@
   <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-box">
       <h2 class="bento-title">Captain's Quarters</h2>
-      
-      <div class="day-settings-section" style="background: var(--white); border: var(--border-w) solid var(--black); padding: 1rem; margin-bottom: 1.5rem; box-shadow: 4px 4px 0px var(--black);">
-        <h3 style="font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--black);">Voyage Settings</h3>
+
+      <div class="day-settings-section"
+        style="background: var(--white); border: var(--border-w) solid var(--black); padding: 1rem; margin-bottom: 1.5rem; box-shadow: 4px 4px 0px var(--black);">
+        <h3 style="font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--black);">Voyage
+          Settings</h3>
         <div style="display: flex; gap: 1rem; align-items: center; color: var(--black);">
           <label style="font-weight: 700;">Set Current Day (1-7):</label>
-          <input type="number" id="currentDayInp" min="1" max="7" style="border: 2px solid var(--black); padding: 0.5rem; font-weight: 700; width: 80px;">
+          <input type="number" id="currentDayInp" min="1" max="7"
+            style="border: 2px solid var(--black); padding: 0.5rem; font-weight: 700; width: 80px;">
         </div>
         <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8; font-weight: 600; color: var(--black);">
           * Use this to manually adjust the ongoing day.
         </div>
       </div>
 
-      <h3 style="font-weight: 900; margin-bottom: 1rem; text-transform: uppercase; font-size: 1.5rem; color: var(--black);">Crew Rosters</h3>
+      <h3
+        style="font-weight: 900; margin-bottom: 1rem; text-transform: uppercase; font-size: 1.5rem; color: var(--black);">
+        Crew Rosters</h3>
       <div id="teamsEditor"></div>
       <div class="settings-actions">
         <button class="add-btn" id="addCrewBtn">Add Crew</button>
@@ -1091,7 +1240,9 @@
         <button class="cancel-btn" id="closeSettingsBtn">Close</button>
       </div>
       <div style="margin-top: 1rem; text-align: center;">
-        <button id="resetDefaultsBtn" style="background: transparent; color: var(--red); border: 2px dashed var(--red); padding: 0.5rem 1rem; font-weight: 900; cursor: pointer; text-transform: uppercase;">Reset Race to Defaults</button>
+        <button id="resetDefaultsBtn"
+          style="background: transparent; color: var(--red); border: 2px dashed var(--red); padding: 0.5rem 1rem; font-weight: 900; cursor: pointer; text-transform: uppercase;">Reset
+          Race to Defaults</button>
       </div>
     </div>
   </div>
@@ -1110,7 +1261,8 @@
       <div class="stat-box teal">
         <span>🕐</span> <span id="clockEl">--:--:--</span>
       </div>
-      <div class="stat-box magenta day-box" style="flex-direction: column; align-items: stretch; gap: 0.5rem; justify-content: center;">
+      <div class="stat-box magenta day-box"
+        style="flex-direction: column; align-items: stretch; gap: 0.5rem; justify-content: center;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div><span>📅</span> DAY <span id="dayEl" style="margin: 0 4px;">1</span> OF 7</div>
           <div>
@@ -1118,7 +1270,9 @@
             <button class="day-btn" id="nextDayBtn" title="Next Day">▶</button>
           </div>
         </div>
-        <button id="toggleDayBtn" style="background: var(--yellow); border: 2px solid var(--black); font-weight: 900; font-family: inherit; padding: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 2px 2px 0px var(--black);">START DAY 1</button>
+        <button id="toggleDayBtn"
+          style="background: var(--yellow); border: 2px solid var(--black); font-weight: 900; font-family: inherit; padding: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 2px 2px 0px var(--black);">START
+          DAY 1</button>
       </div>
       <div class="stat-box red">
         <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
@@ -1129,22 +1283,27 @@
     </div>
 
     <!-- Map -->
-    <section class="bento map-bento">
+    <section class="bento map-bento" id="tab-map">
       <h2 class="bento-title">The Grand Line Track</h2>
 
       <div class="map-scroll">
         <div class="map-inner">
           <!-- The parallel twisted routes spaced 50px apart -->
           <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
-            <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-            <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-            
+            <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
+              opacity="0.2" />
+            <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
+              opacity="0.2" />
+
             <!-- MAIN TRACK -->
             <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
-            
-            <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-            <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-            <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
+
+            <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
+              opacity="0.2" />
+            <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
+              opacity="0.2" />
+            <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5"
+              opacity="0.2" />
           </svg>
 
           <!-- Lore-Accurate Waypoints -->
@@ -1183,15 +1342,15 @@
     </section>
 
     <!-- Leaderboard -->
-    <section class="bento leaderboard-bento">
+    <section class="bento leaderboard-bento" id="tab-leaderboard">
       <h2 class="bento-title">Leaderboard</h2>
       <div class="team-cards-grid" id="teamCardsGrid"></div>
     </section>
 
     <!-- Bottom: Form & Log -->
-    <div class="bottom-grid">
+    <div class="bottom-grid" id="tab-log-container">
 
-      <div class="bento form-bento">
+      <div class="bento form-bento" id="tab-log">
         <h2 class="bento-title">Log Hours</h2>
 
         <div class="form-row">
@@ -1209,10 +1368,12 @@
         <button class="log-btn" id="logBtn">Set Sail!</button>
       </div>
 
-      <div class="bento log-bento" style="display:flex; flex-direction:column;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
+      <div class="bento log-bento" id="tab-activity" style="display:flex; flex-direction:column;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
           <h2 class="bento-title" style="border:none; margin:0; padding:0;">Captain's Log</h2>
-          <select id="logTeamFilter" style="border: 2px solid var(--black); font-weight:700; padding:0.2rem; font-family:inherit; max-width:150px; cursor:pointer;">
+          <select id="logTeamFilter"
+            style="border: 2px solid var(--black); font-weight:700; padding:0.2rem; font-family:inherit; max-width:150px; cursor:pointer;">
             <option value="ALL">All Crews (Activity)</option>
           </select>
         </div>
@@ -1227,11 +1388,15 @@
     <section class="bento rules-bento">
       <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
       <ul class="rules-list">
-        <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
+        <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours
+          daily!</li>
         <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
-        <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
-        <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
-        <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
+        <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!
+        </li>
+        <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base
+          daily goal.</li>
+        <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One
+          Piece!</li>
       </ul>
     </section>
 
@@ -1255,11 +1420,11 @@
     const db = getFirestore(app);
     const raceDocRef = doc(db, 'raceData/currentRace');
     const DEFAULT_TEAMS = [
-      { id: 'straw', name: 'STRAWHATS', ship: '🏴‍☠️', color: '#E93D3D', members: [{name: 'Gunko', goal: 5}, {name: 'Luffy', goal: 10}] },
-      { id: 'heart', name: 'HEART PIRATES', ship: '⚓', color: '#3DCCC7', members: [{name: 'Tashigi', goal: 10}, {name: 'Carrot', goal: 8}] },
-      { id: 'fire', name: 'FIRE FIST CREW', ship: '🔥', color: '#FFD600', members: [{name: 'Sabo', goal: 10}, {name: 'Portgas D Ace', goal: 7}] },
-      { id: 'warlrd', name: 'WARLORDS CREW', ship: '⚔️', color: '#FF4081', members: [{name: 'Yamato', goal: 12}, {name: 'Zoro', goal: 12}] },
-      { id: 'sky', name: 'SKY PIRATES', ship: '☁️', color: '#111111', members: [{name: 'Beckman', goal: 6}, {name: 'Sanji', goal: 12}] },
+      { id: 'straw', name: 'STRAWHATS', ship: '🏴‍☠️', color: '#E93D3D', members: [{ name: 'Gunko', goal: 5 }, { name: 'Luffy', goal: 10 }] },
+      { id: 'heart', name: 'HEART PIRATES', ship: '⚓', color: '#3DCCC7', members: [{ name: 'Tashigi', goal: 10 }, { name: 'Carrot', goal: 8 }] },
+      { id: 'fire', name: 'FIRE FIST CREW', ship: '🔥', color: '#FFD600', members: [{ name: 'Sabo', goal: 10 }, { name: 'Portgas D Ace', goal: 7 }] },
+      { id: 'warlrd', name: 'WARLORDS CREW', ship: '⚔️', color: '#FF4081', members: [{ name: 'Yamato', goal: 12 }, { name: 'Zoro', goal: 12 }] },
+      { id: 'sky', name: 'SKY PIRATES', ship: '☁️', color: '#111111', members: [{ name: 'Beckman', goal: 6 }, { name: 'Sanji', goal: 12 }] },
     ];
 
     let state = {
@@ -1359,7 +1524,7 @@
           if (typeof t.members === 'string') {
             const parsed = parseMembers(t.members);
             if (parsed.length > 0) t.members = parsed;
-            else t.members = [{name: t.members, goal: 5}];
+            else t.members = [{ name: t.members, goal: 5 }];
           }
         });
         state.currentDay = data.currentDay || 1;
@@ -1467,7 +1632,7 @@
       }
 
       const day = getCurrentDay();
-      
+
       const toggleBtn = document.getElementById('toggleDayBtn');
       if (state.dayActive) {
         toggleBtn.textContent = `END DAY ${day}`;
@@ -1526,11 +1691,11 @@
         ship.innerHTML = `<span class="ship-emoji">${team.ship}</span><span class="ship-pct" id="pct_${team.id}">0%</span>`;
         ship.style.offsetPath = MAP_PATHS[index % MAP_PATHS.length];
         ship.style.zIndex = 10 + index;
-        
+
         ship.style.setProperty('--ship-color', team.color || 'var(--white)');
         // Horizontal scatter pushes tied ships forward/backward slightly.
         // Vertical scatter is reduced to almost zero to keep them strictly in their lanes.
-        const scatterX = 0; 
+        const scatterX = 0;
         const scatterY = 0;
         ship.style.setProperty('--scatter-x', `${scatterX}px`);
         ship.style.setProperty('--scatter-y', `${scatterY}px`);
@@ -1548,7 +1713,7 @@
 
       const pct = getMapProgress(teamId);
       ship.style.offsetDistance = Math.min(pct, 100) + '%';
-      
+
       const pctEl = document.getElementById('pct_' + teamId);
       if (pctEl) {
         pctEl.textContent = Math.floor(pct) + '%';
@@ -1573,7 +1738,7 @@
         const goal = getDailyGoal(team.id, day);
         const base = getBaseDailyGoal(team);
         const multiplier = base > 0 ? (goal / base) : 1;
-        
+
         let membersHtml = '';
         if (Array.isArray(team.members)) {
           membersHtml = team.members.map(m => {
@@ -1619,111 +1784,111 @@
       btn.disabled = true;
       try {
         const dayKey = `dailyHours.${day}.${teamId}`;
-    
-    // We update the document atomically.
-    await updateDoc(raceDocRef, {
-      [dayKey]: increment(hrs),
-      log: arrayUnion(logEntry)
-    });
-    
-    const hStr = hrs % 1 === 0 ? hrs : hrs.toFixed(1);
-    showToast(`${team.name} logged ${hStr} HRS`);
-    document.getElementById('hrsInp').value = '';
 
-    const totalExpected = getWeeklyGoal(team);
-    const oldTotal = getCumulativeHours(teamId);
-    const hadWon = oldTotal >= totalExpected; // total without new hrs
-    const newTotal = oldTotal + hrs;
-    
-    // Notice getCumulativeHours doesn't include the newly logged hrs immediately until next snapshot,
-    // so we manually check if the new total crosses the threshold.
-    if (!hadWon && newTotal >= totalExpected) {
-      setTimeout(() => triggerWinner(team, newTotal), 500);
-    }
-  } catch(e) {
-    console.error("Error logging hours: ", e);
-    // Fallback if doc or structure doesn't exist yet
-    if(e.code === 'not-found' || e.message?.includes('No document to update')) {
-      state.dailyHours[day] = state.dailyHours[day] || {};
-      state.dailyHours[day][teamId] = (state.dailyHours[day][teamId] || 0) + hrs;
-      state.log.unshift(logEntry);
-      if(state.log.length > 60) state.log.length = 60;
-      await setDoc(raceDocRef, state);
-      showToast("Logged (Created doc)");
-      document.getElementById('hrsInp').value = '';
-    } else {
-      showToast("Error updating database!");
-    }
-  }
-  btn.disabled = false;
-}
+        // We update the document atomically.
+        await updateDoc(raceDocRef, {
+          [dayKey]: increment(hrs),
+          log: arrayUnion(logEntry)
+        });
 
-function buildTeamSelect(){
-  const sel = document.getElementById('teamSel');
-  const currentVal = sel.value;
-  sel.innerHTML = '';
-  state.teams.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t.id;
-    opt.textContent = t.name;
-    sel.appendChild(opt);
-  });
-  if(currentVal && state.teams.find(t => t.id === currentVal)) {
-    sel.value = currentVal;
-  }
+        const hStr = hrs % 1 === 0 ? hrs : hrs.toFixed(1);
+        showToast(`${team.name} logged ${hStr} HRS`);
+        document.getElementById('hrsInp').value = '';
 
-  const logSel = document.getElementById('logTeamFilter');
-  if (logSel) {
-    const logVal = logSel.value;
-    logSel.innerHTML = '<option value="ALL">All Crews (Activity)</option>';
-    state.teams.forEach(t => {
-      const opt = document.createElement('option');
-      opt.value = t.id;
-      opt.textContent = t.name;
-      logSel.appendChild(opt);
-    });
-    if(logVal === 'ALL' || state.teams.find(t => t.id === logVal)) {
-      logSel.value = logVal;
-    }
-  }
-}
+        const totalExpected = getWeeklyGoal(team);
+        const oldTotal = getCumulativeHours(teamId);
+        const hadWon = oldTotal >= totalExpected; // total without new hrs
+        const newTotal = oldTotal + hrs;
 
-function renderLog(){
-  const container = document.getElementById('activityLog');
-  const filterVal = document.getElementById('logTeamFilter').value;
-
-  if (filterVal !== 'ALL') {
-    const team = state.teams.find(t => t.id === filterVal);
-    if (!team) return;
-
-    let html = '';
-    const currentDay = getCurrentDay();
-    let baseGoal = getBaseDailyGoal(team);
-
-    for (let d = 1; d <= currentDay; d++) {
-      const dayGoal = getDailyGoal(team.id, d);
-      const loggedThatDay = (state.dailyHours[d] && state.dailyHours[d][team.id]) || 0;
-      
-      let isOngoing = (d === currentDay);
-      let success = loggedThatDay >= dayGoal;
-      let statusStr = isOngoing ? 'ONGOING' : (success ? 'SUCCESS!' : 'FAILED');
-      let statusColor = isOngoing ? 'var(--black)' : (success ? 'var(--teal)' : 'var(--red)');
-      let statusBg = isOngoing ? 'var(--yellow)' : 'var(--white)';
-      
-      const teamLogsForDay = state.log.filter(l => l.teamId === team.id && l.day === d);
-      let logsHtml = teamLogsForDay.map(l => `<div style="padding-left: 0.5rem; border-left: 2px solid var(--black); margin-top:0.2rem;">- ${l.name}: <span style="font-weight:900;">+${l.hours} hrs</span></div>`).join('');
-      if (!logsHtml) logsHtml = `<div style="opacity:0.6; font-style:italic;">No logs for this day.</div>`;
-
-      let summaryHtml = '';
-      if (!isOngoing) {
-        if (success) {
-          summaryHtml = `🔥 Momentum kept! Next goal: ${(dayGoal * 1.15).toFixed(1)} hrs`;
+        // Notice getCumulativeHours doesn't include the newly logged hrs immediately until next snapshot,
+        // so we manually check if the new total crosses the threshold.
+        if (!hadWon && newTotal >= totalExpected) {
+          setTimeout(() => triggerWinner(team, newTotal), 500);
+        }
+      } catch (e) {
+        console.error("Error logging hours: ", e);
+        // Fallback if doc or structure doesn't exist yet
+        if (e.code === 'not-found' || e.message?.includes('No document to update')) {
+          state.dailyHours[day] = state.dailyHours[day] || {};
+          state.dailyHours[day][teamId] = (state.dailyHours[day][teamId] || 0) + hrs;
+          state.log.unshift(logEntry);
+          if (state.log.length > 60) state.log.length = 60;
+          await setDoc(raceDocRef, state);
+          showToast("Logged (Created doc)");
+          document.getElementById('hrsInp').value = '';
         } else {
-          summaryHtml = `🧊 Momentum lost. Goal reset to ${baseGoal.toFixed(1)} hrs`;
+          showToast("Error updating database!");
         }
       }
+      btn.disabled = false;
+    }
 
-      html = `
+    function buildTeamSelect() {
+      const sel = document.getElementById('teamSel');
+      const currentVal = sel.value;
+      sel.innerHTML = '';
+      state.teams.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = t.name;
+        sel.appendChild(opt);
+      });
+      if (currentVal && state.teams.find(t => t.id === currentVal)) {
+        sel.value = currentVal;
+      }
+
+      const logSel = document.getElementById('logTeamFilter');
+      if (logSel) {
+        const logVal = logSel.value;
+        logSel.innerHTML = '<option value="ALL">All Crews (Activity)</option>';
+        state.teams.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = t.name;
+          logSel.appendChild(opt);
+        });
+        if (logVal === 'ALL' || state.teams.find(t => t.id === logVal)) {
+          logSel.value = logVal;
+        }
+      }
+    }
+
+    function renderLog() {
+      const container = document.getElementById('activityLog');
+      const filterVal = document.getElementById('logTeamFilter').value;
+
+      if (filterVal !== 'ALL') {
+        const team = state.teams.find(t => t.id === filterVal);
+        if (!team) return;
+
+        let html = '';
+        const currentDay = getCurrentDay();
+        let baseGoal = getBaseDailyGoal(team);
+
+        for (let d = 1; d <= currentDay; d++) {
+          const dayGoal = getDailyGoal(team.id, d);
+          const loggedThatDay = (state.dailyHours[d] && state.dailyHours[d][team.id]) || 0;
+
+          let isOngoing = (d === currentDay);
+          let success = loggedThatDay >= dayGoal;
+          let statusStr = isOngoing ? 'ONGOING' : (success ? 'SUCCESS!' : 'FAILED');
+          let statusColor = isOngoing ? 'var(--black)' : (success ? 'var(--teal)' : 'var(--red)');
+          let statusBg = isOngoing ? 'var(--yellow)' : 'var(--white)';
+
+          const teamLogsForDay = state.log.filter(l => l.teamId === team.id && l.day === d);
+          let logsHtml = teamLogsForDay.map(l => `<div style="padding-left: 0.5rem; border-left: 2px solid var(--black); margin-top:0.2rem;">- ${l.name}: <span style="font-weight:900;">+${l.hours} hrs</span></div>`).join('');
+          if (!logsHtml) logsHtml = `<div style="opacity:0.6; font-style:italic;">No logs for this day.</div>`;
+
+          let summaryHtml = '';
+          if (!isOngoing) {
+            if (success) {
+              summaryHtml = `🔥 Momentum kept! Next goal: ${(dayGoal * 1.15).toFixed(1)} hrs`;
+            } else {
+              summaryHtml = `🧊 Momentum lost. Goal reset to ${baseGoal.toFixed(1)} hrs`;
+            }
+          }
+
+          html = `
         <div class="log-entry" style="display:flex; flex-direction:column; gap:0.5rem; background:${statusBg};">
           <div style="display:flex; justify-content:space-between; border-bottom: 2px dashed var(--black); padding-bottom: 4px;">
             <strong style="font-size:1.2rem;">DAY ${d}</strong>
@@ -1741,21 +1906,21 @@ function renderLog(){
           </div>
         </div>
       ` + html; // Prepend to show latest days first
-    }
+        }
 
-    if (!html) html = '<div class="log-empty">No voyage history yet.</div>';
-    container.innerHTML = html;
-    return;
-  }
+        if (!html) html = '<div class="log-empty">No voyage history yet.</div>';
+        container.innerHTML = html;
+        return;
+      }
 
-  if(!state.log.length){
-    container.innerHTML = '<div class="log-empty">No voyages logged yet.</div>';
-    return;
-  }
-  container.innerHTML = state.log.slice(0,40).map(e => {
-    const d = new Date(e.ts);
-    const pad = n => String(n).padStart(2,'0');
-    const ts  = `${ d.getMonth() + 1 }/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      if (!state.log.length) {
+        container.innerHTML = '<div class="log-empty">No voyages logged yet.</div>';
+        return;
+      }
+      container.innerHTML = state.log.slice(0, 40).map(e => {
+        const d = new Date(e.ts);
+        const pad = n => String(n).padStart(2, '0');
+        const ts = `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
         const h = e.hours % 1 === 0 ? e.hours : Number(e.hours).toFixed(1);
         return `<div class="log-entry">
       <div class="log-entry-header">
@@ -1767,8 +1932,8 @@ function renderLog(){
         <button class="delete-log-btn" title="Delete Log" onclick="deleteLog('${e.id}')">🗑️</button>
       </div>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
     window.deleteLog = async function (logId) {
       if (!confirm("Are you sure you want to delete this log? The hours will be subtracted.")) return;
@@ -1799,11 +1964,11 @@ function renderLog(){
     function triggerWinner(team, overrideHrs) {
       // document.getElementById('winnerShipBig').textContent = team.ship;
       // document.getElementById('winnerSubText').textContent = `${team.name} have found the One Piece!`;
-      
+
       // const totalHrs = overrideHrs !== undefined ? overrideHrs : getCumulativeHours(team.id);
       // const goalHrs = getWeeklyGoal(team);
       // document.getElementById('winnerDebugText').textContent = `Total Logged: ${totalHrs.toFixed(1)} HRS  |  Goal: ${goalHrs.toFixed(1)} HRS`;
-      
+
       // document.getElementById('winnerOverlay').classList.add('show');
     }
 
@@ -1855,7 +2020,7 @@ function renderLog(){
       return div;
     }
 
-    window.addMemberRow = function(btn) {
+    window.addMemberRow = function (btn) {
       const list = btn.parentElement.querySelector('.members-list');
       const row = document.createElement('div');
       row.className = 'crew-member-row';
@@ -1884,7 +2049,7 @@ function renderLog(){
 
     function addCrewRow() {
       const container = document.getElementById('teamsEditor');
-      const newTeam = { id: 'team_' + Date.now(), name: '', ship: '⛵', color: '#3DCCC7', members: [{name: '', goal: 5}] };
+      const newTeam = { id: 'team_' + Date.now(), name: '', ship: '⛵', color: '#3DCCC7', members: [{ name: '', goal: 5 }] };
       container.appendChild(createTeamRow(newTeam, container.children.length));
     }
 
@@ -1964,7 +2129,7 @@ function renderLog(){
         ctx.clearRect(0, 0, width, height);
 
         // --- A. Draw the Blueprint Grid ---
-        const gridSize = 80; 
+        const gridSize = 80;
         ctx.strokeStyle = 'rgba(15, 15, 15, 0.04)'; // Extremely subtle black
         ctx.lineWidth = 1;
 
@@ -1985,7 +2150,7 @@ function renderLog(){
         ctx.strokeStyle = 'rgba(15, 15, 15, 0.15)'; // Darker for emphasis
         ctx.lineWidth = 2;
         const markerSize = 6;
-        
+
         // Draw crosshairs at every 3rd grid intersection
         for (let x = gridSize; x < width; x += gridSize * 3) {
           for (let y = gridSize; y < height; y += gridSize * 3) {
@@ -2016,13 +2181,13 @@ function renderLog(){
         ctx.moveTo(-100, height * 0.8);
         ctx.bezierCurveTo(width * 0.4, height * 0.9, width * 0.5, height * 0.2, width + 100, height * 0.3);
         ctx.stroke();
-        
+
         ctx.setLineDash([]); // Reset dash for future redraws
       };
 
       // 3. Initial draw and resize listener
       drawStaticPattern();
-      
+
       // Use a small debounce for window resizing so it doesn't lag
       let resizeTimer;
       window.addEventListener('resize', () => {
@@ -2033,6 +2198,92 @@ function renderLog(){
 
     // Fire it up when the DOM is ready
     document.addEventListener('DOMContentLoaded', injectPremiumCanvas);
+  </script>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav" id="bottomNav" style="display: none;">
+    <button class="nav-item active" onclick="switchTab('map', event)">
+      <span class="nav-icon">🗺️</span>
+      <span>Map</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('leaderboard', event)">
+      <span class="nav-icon">🏆</span>
+      <span>Rank</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('log', event)">
+      <span class="nav-icon">✍️</span>
+      <span>Log Hours</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('activity', event)">
+      <span class="nav-icon">📜</span>
+      <span>Crew Logs</span>
+    </button>
+  </nav>
+
+  <script>
+    // Tab switching logic for mobile
+    window.switchTab = function(tab, event) {
+      if(event) {
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+      }
+
+      document.getElementById('tab-map').classList.remove('active-tab');
+      document.getElementById('tab-leaderboard').classList.remove('active-tab');
+      document.getElementById('tab-log-container').classList.remove('active-tab');
+
+      if(tab === 'map') document.getElementById('tab-map').classList.add('active-tab');
+      if(tab === 'leaderboard') document.getElementById('tab-leaderboard').classList.add('active-tab');
+      if(tab === 'log') {
+        document.getElementById('tab-log-container').classList.add('active-tab');
+        document.getElementById('tab-log').style.display = 'block';
+        document.getElementById('tab-activity').style.display = 'none';
+      }
+      if(tab === 'activity') {
+        document.getElementById('tab-log-container').classList.add('active-tab');
+        document.getElementById('tab-log').style.display = 'none';
+        document.getElementById('tab-activity').style.display = 'block';
+      }
+      
+      // Update body for mobile layout
+      document.body.style.overflowX = 'hidden';
+    }
+
+    // Touch Panning for map
+    const mapScroll = document.querySelector('.map-scroll');
+    if(mapScroll) {
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+
+      mapScroll.addEventListener('mousedown', (e) => {
+        isDown = true;
+        mapScroll.style.cursor = 'grabbing';
+        startX = e.pageX - mapScroll.offsetLeft;
+        scrollLeft = mapScroll.scrollLeft;
+      });
+      mapScroll.addEventListener('mouseleave', () => {
+        isDown = false;
+        mapScroll.style.cursor = 'grab';
+      });
+      mapScroll.addEventListener('mouseup', () => {
+        isDown = false;
+        mapScroll.style.cursor = 'grab';
+      });
+      mapScroll.addEventListener('mousemove', (e) => {
+        if(!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - mapScroll.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        mapScroll.scrollLeft = scrollLeft - walk;
+      });
+    }
+    
+    // Check if mobile and show bottom nav
+    if(window.innerWidth <= 768) {
+      document.getElementById('bottomNav').style.display = 'flex';
+      window.switchTab('map', null);
+    }
   </script>
 </body>
 
