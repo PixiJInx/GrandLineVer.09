@@ -161,9 +161,6 @@
     .nav-item.active{background:var(--yellow)}
     .nav-icon{font-size:1.5rem;margin-bottom:2px}
 
-    /* === MOBILE TAB SYSTEM === */
-    .hidden-tab{display:none!important}
-
     /* === MOBILE === */
     @media(max-width:768px){
       body{padding:0 0 calc(70px + env(safe-area-inset-bottom)) 0}
@@ -173,8 +170,26 @@
       .bottom-nav.keyboard-open{display:none!important}
       .bento{padding:1.25rem!important}
       .header-bento{padding:1.25rem!important}
+
+      /* CSS-first tab hiding: all tab sections hidden by default on mobile */
+      #bento-header,#bento-stats,#tab-map,#tab-leaderboard,#tab-log,#tab-activity{display:none!important}
+      /* JS adds .tab-active to show the active tab's elements */
+      #bento-header.tab-active{display:block!important}
+      #bento-stats.tab-active{display:grid!important}
+      #tab-map.tab-active{display:block!important}
+      #tab-leaderboard.tab-active{display:block!important}
+      #tab-log.tab-active{display:block!important}
+      #tab-activity.tab-active{display:flex!important}
+
+      /* Stats grid fixes */
       .stats-grid{gap:.5rem}
-      .stat-box{padding:.75rem;font-size:.85rem;flex-direction:column;text-align:center;gap:.3rem}
+      .stat-box{padding:.75rem .5rem;font-size:.8rem;gap:.25rem;overflow:hidden;word-break:break-word}
+      .stat-box.magenta.day-box{font-size:.75rem}
+      .stat-box.magenta.day-box>div:first-child{flex-wrap:wrap;gap:.25rem}
+      .day-btn{font-size:1rem;padding:0 2px}
+      #toggleDayBtn{font-size:.7rem!important;padding:.4rem!important}
+      .settings-btn{font-size:1.3rem;padding:.6rem;min-width:44px;min-height:44px}
+
       .map-bento{padding:1.25rem 0}
       .map-bento .bento-title{margin:0 1rem 1rem 1rem}
       .map-inner{min-width:1200px!important;width:1200px!important}
@@ -287,8 +302,8 @@
         <div class="stat-box red">
           <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
         </div>
-        <div class="stat-box" style="font-size: 1rem;">
-          <span>🎯</span> ALL CREWS TODAY: <span id="globalGoalsEl">0</span> HRS
+        <div class="stat-box">
+          <span>🎯</span> GOAL TODAY: <span id="globalGoalsEl">0</span> HRS
         </div>
       </div>
 
@@ -1199,28 +1214,32 @@
   </nav>
 
   <script>
-    // Tab switching logic for mobile
-    const TAB_MAP = {
+    // Tab switching logic for mobile — uses CSS-first approach
+    // On mobile, all tab sections are hidden by CSS by default.
+    // JS adds .tab-active to show the correct sections.
+    var TAB_MAP = {
       map: ['bento-header', 'bento-stats', 'tab-map'],
       leaderboard: ['tab-leaderboard'],
       log: ['tab-log'],
       activity: ['tab-activity']
     };
-    const ALL_TAB_IDS = ['bento-header', 'bento-stats', 'tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
+    var ALL_TAB_IDS = ['bento-header', 'bento-stats', 'tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
 
     window.switchTab = function(tab, event) {
       if (event) {
         document.querySelectorAll('.nav-item').forEach(function(btn) { btn.classList.remove('active'); });
         event.currentTarget.classList.add('active');
       }
+      // Remove tab-active from all
       ALL_TAB_IDS.forEach(function(id) {
         var el = document.getElementById(id);
-        if (el) { el.classList.add('hidden-tab'); el.style.display = ''; }
+        if (el) el.classList.remove('tab-active');
       });
+      // Add tab-active to the visible sections
       var show = TAB_MAP[tab] || [];
       show.forEach(function(id) {
         var el = document.getElementById(id);
-        if (el) el.classList.remove('hidden-tab');
+        if (el) el.classList.add('tab-active');
       });
     };
 
@@ -1246,9 +1265,12 @@
       }, true);
     }
 
-    // Init mobile view
+    // Init mobile view — show map tab by default
     if (window.innerWidth <= 768) {
       switchTab('map', null);
+      // Also set the first nav button as active
+      var mapBtn = document.querySelector('.nav-item[data-tab="map"]');
+      if (mapBtn) mapBtn.classList.add('active');
     }
   </script>
 </body>
