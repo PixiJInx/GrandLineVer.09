@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
   <title>Grand Line Race — One Piece Study Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -13,7 +12,7 @@
       --bg:#000;--surface:#161618;--surface2:#1e1e22;--surface3:#252528;
       --border:rgba(255,255,255,.08);--border-h:rgba(255,255,255,.14);
       --text:#fff;--text2:rgba(255,255,255,.5);--text3:rgba(255,255,255,.3);
-      --green:#4ADE80;--pink:#F472B6;--yellow:#FACC15;--blue:#38BDF8;--red:#EF4444;
+      --green:#000000;--pink:#F472B6;--yellow:#FACC15;--blue:#38BDF8;--red:#EF4444;
       --r:20px;--r-sm:14px;--r-pill:999px;
       --spring:cubic-bezier(.175,.885,.32,1.275);--map-path:path('M 60 250 L 1140 250');
       /* Script compat */
@@ -21,26 +20,29 @@
       --teal:#4ADE80;--magenta:#F472B6;--border-w:1px
     }
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    html{height:100%}
-    /* KILL THE GREEN BAR — targets shadow DOM + injected elements */
-    :host, .preact-border-shadow-host, [class*="preact-"], [id*="preact-"],
-    body > div:first-child[style*="background-color"],
-    #___gatsby, #next-top-loader {
-      display: none !important;
-      height: 0 !important;
-      width: 0 !important;
-      opacity: 0 !important;
-      position: absolute !important;
-      pointer-events: none !important;
-      visibility: hidden !important;
-      top: -9999px !important;
+    html, body {
+      background-color: #000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden;
+      height: 100%;
+      border: none !important;
+      outline: none !important;
+      overscroll-behavior-y: none;
     }
-    html, body { margin: 0 !important; padding: 0 !important; overflow-x: hidden; }
-    body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%;display:flex;flex-direction:column;line-height:1.5;-webkit-font-smoothing:antialiased}
+    body{color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%;display:flex;flex-direction:column;line-height:1.5;-webkit-font-smoothing:antialiased}
+    /* Hide the banner by default */
+    #challengeEndedBanner {
+      display: none !important;
+      height: 0;
+      margin: 0;
+      padding: 0;
+    }
+    #challengeEndedBanner.show { display: block !important; height: auto; padding: .6rem; }
     input,select,button{min-height:44px;font-family:inherit;color:var(--text)}
 
     /* === APP SHELL === */
-    .app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:1rem 1rem calc(72px + env(safe-area-inset-bottom) + .5rem);-webkit-overflow-scrolling:touch;max-width:560px;margin:0 auto;width:100%}
+    .app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:1rem 1rem calc(72px + env(safe-area-inset-bottom) + .5rem);padding-top:0!important;-webkit-overflow-scrolling:touch;max-width:560px;margin:0 auto;width:100%}
     .app-content::-webkit-scrollbar{display:none}
 
     /* === TABS === */
@@ -185,12 +187,20 @@
     .map-svg path[stroke="url(#trackGlow)"] {
       stroke: rgba(255,255,255,0.05) !important;
     }
+    * { border-top: none !important; }
+
+    body {
+      border-top: 0 !important;
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    #challengeEndedBanner {
+      margin-top: 0 !important;
+      border-radius: 0 !important;
+    }
   </style>
 </head>
-<body>
-
-  <div class="challenge-ended-banner" id="challengeEndedBanner">CHALLENGE ENDED</div>
-  <div class="toast" id="toast"></div>
+<body><div class="challenge-ended-banner" id="challengeEndedBanner">CHALLENGE ENDED</div><div class="toast" id="toast"></div>
 
   <!-- Winner Overlay -->
   <div class="winner-overlay" id="winnerOverlay">
@@ -270,9 +280,9 @@
             <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="trackGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#4ADE80" stop-opacity="0.6"/>
-                  <stop offset="50%" stop-color="#38BDF8" stop-opacity="0.6"/>
-                  <stop offset="100%" stop-color="#F472B6" stop-opacity="0.6"/>
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.15)" stop-opacity="0.3"/>
+                  <stop offset="50%" stop-color="rgba(255,255,255,0.1)" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.15)" stop-opacity="0.3"/>
                 </linearGradient>
               </defs>
               <path d="M 60 80 L 1140 80" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
