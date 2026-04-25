@@ -1,26 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Grand Line Race — One Piece Study Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <style>
-    :root{
-      --bg:#000;--surface:#161618;--surface2:#1e1e22;--surface3:#252528;
-      --border:rgba(255,255,255,.08);--border-h:rgba(255,255,255,.14);
-      --text:#fff;--text2:rgba(255,255,255,.5);--text3:rgba(255,255,255,.3);
-      --green:#000000;--pink:#F472B6;--yellow:#FACC15;--blue:#38BDF8;--red:#EF4444;
-      --r:20px;--r-sm:14px;--r-pill:999px;
-      --spring:cubic-bezier(.175,.885,.32,1.275);--map-path:path('M 60 250 L 1140 250');
+    :root {
+      --bg: #000;
+      --surface: #161618;
+      --surface2: #1e1e22;
+      --surface3: #252528;
+      --border: rgba(255, 255, 255, .08);
+      --border-h: rgba(255, 255, 255, .14);
+      --text: #fff;
+      --text2: rgba(255, 255, 255, .5);
+      --text3: rgba(255, 255, 255, .3);
+      --green: #4ADE80;
+      --pink: #F472B6;
+      --yellow: #FACC15;
+      --blue: #38BDF8;
+      --red: #EF4444;
+      --r: 20px;
+      --r-sm: 14px;
+      --r-pill: 999px;
+      --spring: cubic-bezier(.175, .885, .32, 1.275);
+      --map-path: path('M 60 250 L 1140 250');
       /* Script compat */
-      --bg-alabaster:#0a0a0a;--bg-beige:#1e1e22;--black:rgba(255,255,255,.55);--white:#161618;
-      --teal:#4ADE80;--magenta:#F472B6;--border-w:1px
+      --bg-alabaster: #0a0a0a;
+      --bg-beige: #1e1e22;
+      --black: rgba(255, 255, 255, .55);
+      --white: #161618;
+      --teal: #4ADE80;
+      --magenta: #F472B6;
+      --border-w: 1px
     }
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    html, body {
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html,
+    body {
       background-color: #000 !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -30,7 +60,17 @@
       outline: none !important;
       overscroll-behavior-y: none;
     }
-    body{color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%;display:flex;flex-direction:column;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+    body {
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased
+    }
+
     /* Hide the banner by default */
     #challengeEndedBanner {
       display: none !important;
@@ -38,177 +78,1025 @@
       margin: 0;
       padding: 0;
     }
-    #challengeEndedBanner.show { display: block !important; height: auto; padding: .6rem; }
-    input,select,button{min-height:44px;font-family:inherit;color:var(--text)}
+
+    #challengeEndedBanner.show {
+      display: block !important;
+      height: auto;
+      padding: .6rem;
+    }
+
+    input,
+    select,
+    button {
+      min-height: 44px;
+      font-family: inherit;
+      color: var(--text)
+    }
 
     /* === APP SHELL === */
-    .app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:1rem 1rem calc(72px + env(safe-area-inset-bottom) + .5rem);padding-top:0!important;-webkit-overflow-scrolling:touch;max-width:560px;margin:0 auto;width:100%}
-    .app-content::-webkit-scrollbar{display:none}
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 1rem 1rem calc(72px + env(safe-area-inset-bottom) + .5rem);
+      padding-top: 0 !important;
+      -webkit-overflow-scrolling: touch;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%
+    }
+
+    .app-content::-webkit-scrollbar {
+      display: none
+    }
 
     /* === TABS === */
-    .tab-view{display:none;animation:fadeUp .3s ease}
-    .tab-view.tab-active{display:block}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .tab-view {
+      display: none;
+      animation: fadeUp .3s ease
+    }
+
+    .tab-view.tab-active {
+      display: block
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
 
     /* === BOTTOM NAV === */
-    .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(0,0,0,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:500}
-    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-size:.65rem;font-weight:600;color:var(--text3);letter-spacing:.02em;transition:color .2s}
-    .nav-btn .nav-ico{width:20px;height:20px;transition:transform .2s var(--spring);display:flex;align-items:center;justify-content:center}
-    .nav-btn .nav-ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-    .nav-btn.active{color:var(--green)}
-    .nav-btn.active .nav-ico{transform:scale(1.1)}
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(64px + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: rgba(0, 0, 0, .85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 500
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: .65rem;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: .02em;
+      transition: color .2s
+    }
+
+    .nav-btn .nav-ico {
+      width: 20px;
+      height: 20px;
+      transition: transform .2s var(--spring);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .nav-btn .nav-ico svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .nav-btn.active {
+      color: var(--green)
+    }
+
+    .nav-btn.active .nav-ico {
+      transform: scale(1.1)
+    }
 
     /* === HEADER === */
-    .app-header{margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:flex-start}
-    .app-header h1{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
-    .app-header p{font-size:.8rem;font-weight:500;color:var(--text2);margin-top:.2rem}
-    .settings-btn{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s;flex-shrink:0}
-    .settings-btn:hover{background:var(--surface2);transform:rotate(30deg)}
-    .settings-btn svg{width:18px;height:18px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .app-header {
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    .app-header h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.1
+    }
+
+    .app-header p {
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text2);
+      margin-top: .2rem
+    }
+
+    .settings-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+      flex-shrink: 0
+    }
+
+    .settings-btn:hover {
+      background: var(--surface2);
+      transform: rotate(30deg)
+    }
+
+    .settings-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: var(--text2);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
 
     /* === CARDS === */
-    .bento{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;position:relative;min-width:0}
-    .bento-title{font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);border:none;display:block;margin-bottom:.75rem}
-    .view-title{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;margin-bottom:1rem}
+    .bento {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.25rem;
+      position: relative;
+      min-width: 0
+    }
+
+    .bento-title {
+      font-size: .95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text2);
+      border: none;
+      display: block;
+      margin-bottom: .75rem
+    }
+
+    .view-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: 1rem
+    }
 
     /* === STATS === */
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
-    .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:.7rem .65rem;display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:.8rem}
-    .stat-ico{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-    .stat-ico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-    .stat-box.teal{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2)}
-    .stat-box.teal span:first-child+span{color:var(--green)}
-    .stat-box.magenta{background:rgba(244,114,182,.08);border-color:rgba(244,114,182,.2)}
-    .stat-box.red{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2)}
-    .stat-box.red span:first-child{color:var(--red)}
-    .day-btn{background:none;border:none;color:var(--text2);font-size:.9rem;cursor:pointer;padding:0 2px;transition:color .15s}
-    .day-btn:hover{color:var(--text)}
-    #toggleDayBtn{border:1px solid var(--border)!important;border-radius:var(--r-sm);background:var(--surface2)!important;color:var(--text)!important;font-weight:700;font-family:inherit;padding:.35rem!important;font-size:.65rem;cursor:pointer;transition:background .2s!important;box-shadow:none!important}
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .5rem;
+      margin-bottom: 1rem
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: .7rem .65rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-weight: 600;
+      font-size: .8rem
+    }
+
+    .stat-ico {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .stat-ico svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .stat-box.teal {
+      background: rgba(74, 222, 128, .08);
+      border-color: rgba(74, 222, 128, .2)
+    }
+
+    .stat-box.teal span:first-child+span {
+      color: var(--green)
+    }
+
+    .stat-box.magenta {
+      background: rgba(244, 114, 182, .08);
+      border-color: rgba(244, 114, 182, .2)
+    }
+
+    .stat-box.red {
+      background: rgba(239, 68, 68, .08);
+      border-color: rgba(239, 68, 68, .2)
+    }
+
+    .stat-box.red span:first-child {
+      color: var(--red)
+    }
+
+    .day-btn {
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-size: .9rem;
+      cursor: pointer;
+      padding: 0 2px;
+      transition: color .15s
+    }
+
+    .day-btn:hover {
+      color: var(--text)
+    }
+
+    #toggleDayBtn {
+      border: 1px solid var(--border) !important;
+      border-radius: var(--r-sm);
+      background: var(--surface2) !important;
+      color: var(--text) !important;
+      font-weight: 700;
+      font-family: inherit;
+      padding: .35rem !important;
+      font-size: .65rem;
+      cursor: pointer;
+      transition: background .2s !important;
+      box-shadow: none !important
+    }
 
     /* === MAP === */
-    .map-bento{background:var(--surface);padding:1.25rem 0;overflow:hidden}
-    .map-bento .bento-title{margin:0 1.25rem .75rem;color:var(--green);font-size:.8rem}
-    .map-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg)}
-    .map-scroll::-webkit-scrollbar{height:4px}
-    .map-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
-    .map-inner{position:relative;min-width:1200px;width:1200px;height:550px;margin:0 auto}
-    .map-svg{position:absolute;top:0;left:0;width:100%;height:100%}
-    .waypoint{position:absolute;left:0;top:0;offset-path:var(--map-path);offset-rotate:0deg;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:5}
-    .waypoint-icon{width:16px;height:16px;background:var(--yellow);border:2px solid rgba(250,204,21,.4);border-radius:50%;box-shadow:0 0 12px rgba(250,204,21,.25)}
-    .end-icon{background:var(--red);width:22px;height:22px;border-color:rgba(239,68,68,.4);box-shadow:0 0 14px rgba(239,68,68,.3)}
-    .waypoint-text{position:absolute;top:100%;margin-top:6px;font-weight:700;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:2px 8px;font-size:.6rem;letter-spacing:.03em;white-space:nowrap;color:var(--text2)}
-    .ship-unit{position:absolute;left:0;top:0;offset-rotate:0deg;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-50% + var(--scatter-y,0px)));z-index:10;transition:offset-distance .5s var(--spring),transform .2s;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--ship-color,var(--surface));border:2px solid rgba(255,255,255,.12);border-radius:50%;font-size:.7rem;font-weight:800;letter-spacing:.03em;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 0 20px rgba(0,0,0,.5);cursor:pointer}
-    .ship-unit::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid rgba(255,255,255,.1)}
-    .ship-unit:hover{z-index:100!important;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-55% + var(--scatter-y,0px))) scale(1.15);box-shadow:0 0 24px rgba(74,222,128,.2)}
-    .ship-pct{position:absolute;top:100%;margin-top:10px;font-size:.65rem;font-weight:800;background:var(--green);color:#000;border:none;border-radius:var(--r-pill);padding:1px 6px;line-height:1.2;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(74,222,128,.3)}
+    .map-bento {
+      background: var(--surface);
+      padding: 1.25rem 0;
+      overflow: hidden
+    }
+
+    .map-bento .bento-title {
+      margin: 0 1.25rem .75rem;
+      color: var(--green);
+      font-size: .8rem
+    }
+
+    .map-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg)
+    }
+
+    .map-scroll::-webkit-scrollbar {
+      height: 4px
+    }
+
+    .map-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 2px
+    }
+
+    .map-inner {
+      position: relative;
+      min-width: 1200px;
+      width: 1200px;
+      height: 550px;
+      margin: 0 auto
+    }
+
+    .map-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%
+    }
+
+    .waypoint {
+      position: absolute;
+      left: 0;
+      top: 0;
+      offset-path: var(--map-path);
+      offset-rotate: 0deg;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5
+    }
+
+    .waypoint-icon {
+      width: 16px;
+      height: 16px;
+      background: var(--yellow);
+      border: 2px solid rgba(250, 204, 21, .4);
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(250, 204, 21, .25)
+    }
+
+    .end-icon {
+      background: var(--red);
+      width: 22px;
+      height: 22px;
+      border-color: rgba(239, 68, 68, .4);
+      box-shadow: 0 0 14px rgba(239, 68, 68, .3)
+    }
+
+    .waypoint-text {
+      position: absolute;
+      top: 100%;
+      margin-top: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      padding: 2px 8px;
+      font-size: .6rem;
+      letter-spacing: .03em;
+      white-space: nowrap;
+      color: var(--text2)
+    }
+
+    .ship-unit {
+      position: absolute;
+      left: 0;
+      top: 0;
+      offset-rotate: 0deg;
+      transform: translate(calc(-50% + var(--scatter-x, 0px)), calc(-50% + var(--scatter-y, 0px)));
+      z-index: 10;
+      transition: offset-distance .5s var(--spring), transform .2s;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ship-color, var(--surface));
+      border: 2px solid rgba(255, 255, 255, .12);
+      border-radius: 50%;
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .03em;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+      box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+      cursor: pointer
+    }
+
+    .ship-unit::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 7px solid rgba(255, 255, 255, .1)
+    }
+
+    .ship-unit:hover {
+      z-index: 100 !important;
+      transform: translate(calc(-50% + var(--scatter-x, 0px)), calc(-55% + var(--scatter-y, 0px))) scale(1.15);
+      box-shadow: 0 0 24px rgba(74, 222, 128, .2)
+    }
+
+    .ship-pct {
+      position: absolute;
+      top: 100%;
+      margin-top: 10px;
+      font-size: .65rem;
+      font-weight: 800;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: var(--r-pill);
+      padding: 1px 6px;
+      line-height: 1.2;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(74, 222, 128, .3)
+    }
 
     /* === LEADERBOARD === */
-    .team-cards-grid{display:flex;flex-direction:column;gap:.75rem}
-    .team-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;text-align:center;position:relative;transition:transform .25s var(--spring)}
-    .team-card:hover{transform:translateY(-2px)}
-    .rank-badge{position:absolute;top:.75rem;right:.75rem;background:var(--yellow);color:#000;border:none;border-radius:var(--r-pill);font-weight:800;font-size:.75rem;padding:3px 10px}
-    .card-ship{font-size:1rem;margin-bottom:.15rem;display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);margin:0 auto .25rem;font-weight:800;letter-spacing:.04em;color:var(--text2)}
-    .card-name{font-weight:800;font-size:1.1rem;margin-bottom:.1rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1.1}
-    .card-members{font-size:.85rem;font-weight:600;margin-bottom:.75rem;border-radius:var(--r-sm)}
-    .card-hours{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;color:var(--green)}
-    .prog-bar-container{width:100%;height:14px;border:none;border-radius:var(--r-pill);background:var(--surface3);margin-top:.75rem;position:relative;overflow:hidden}
-    .prog-fill{height:100%;background:var(--fill-color,var(--green));transition:width .6s cubic-bezier(.34,1.56,.64,1);border-radius:var(--r-pill);background-image:none;animation:none}
+    .team-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem
+    }
+
+    .team-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.25rem;
+      text-align: center;
+      position: relative;
+      transition: transform .25s var(--spring)
+    }
+
+    .team-card:hover {
+      transform: translateY(-2px)
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: .75rem;
+      right: .75rem;
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      border-radius: var(--r-pill);
+      font-weight: 800;
+      font-size: .75rem;
+      padding: 3px 10px
+    }
+
+    .card-ship {
+      font-size: 1rem;
+      margin-bottom: .15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      margin: 0 auto .25rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      color: var(--text2)
+    }
+
+    .card-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: .1rem;
+      text-transform: uppercase;
+      letter-spacing: -.01em;
+      line-height: 1.1
+    }
+
+    .card-members {
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: .75rem;
+      border-radius: var(--r-sm)
+    }
+
+    .card-hours {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      color: var(--green)
+    }
+
+    .prog-bar-container {
+      width: 100%;
+      height: 14px;
+      border: none;
+      border-radius: var(--r-pill);
+      background: var(--surface3);
+      margin-top: .75rem;
+      position: relative;
+      overflow: hidden
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--fill-color, var(--green));
+      transition: width .6s cubic-bezier(.34, 1.56, .64, 1);
+      border-radius: var(--r-pill);
+      background-image: none;
+      animation: none
+    }
 
     /* === FORM === */
-    .form-bento{background:var(--surface)}
-    .form-row{margin-bottom:.85rem}
-    .form-lbl{display:block;font-weight:700;margin-bottom:.3rem;text-transform:uppercase;font-size:.7rem;letter-spacing:.06em;color:var(--text2)}
-    .form-ctrl{width:100%;border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem;font-weight:600;font-size:.95rem;background:var(--bg);color:var(--text);transition:border-color .2s;-webkit-appearance:none}
-    .form-ctrl:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(74,222,128,.1)}
-    .log-btn{width:100%;background:var(--green);color:#000;border:none;border-radius:var(--r-pill);padding:.8rem;font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;transition:transform .15s var(--spring),opacity .2s;margin-top:.4rem}
-    .log-btn:hover:not(:disabled){transform:translateY(-1px)}
-    .log-btn:active{transform:translateY(1px)!important;opacity:.9}
-    .log-btn:disabled{opacity:.35;cursor:not-allowed}
+    .form-bento {
+      background: var(--surface)
+    }
+
+    .form-row {
+      margin-bottom: .85rem
+    }
+
+    .form-lbl {
+      display: block;
+      font-weight: 700;
+      margin-bottom: .3rem;
+      text-transform: uppercase;
+      font-size: .7rem;
+      letter-spacing: .06em;
+      color: var(--text2)
+    }
+
+    .form-ctrl {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: .75rem;
+      font-weight: 600;
+      font-size: .95rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color .2s;
+      -webkit-appearance: none
+    }
+
+    .form-ctrl:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, .1)
+    }
+
+    .log-btn {
+      width: 100%;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: var(--r-pill);
+      padding: .8rem;
+      font-weight: 800;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      cursor: pointer;
+      transition: transform .15s var(--spring), opacity .2s;
+      margin-top: .4rem
+    }
+
+    .log-btn:hover:not(:disabled) {
+      transform: translateY(-1px)
+    }
+
+    .log-btn:active {
+      transform: translateY(1px) !important;
+      opacity: .9
+    }
+
+    .log-btn:disabled {
+      opacity: .35;
+      cursor: not-allowed
+    }
 
     /* === ACTIVITY LOG === */
-    .log-bento{background:var(--surface)}
-    .activity-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
-    .activity-header .view-title{margin:0;font-size:1.1rem}
-    .activity-header select{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--r-pill);font-weight:600;padding:.3rem .6rem;font-family:inherit;font-size:.7rem;cursor:pointer}
-    .activity-scroll{max-height:60vh;overflow-y:auto;padding:.25rem}
-    .activity-scroll::-webkit-scrollbar{width:3px}
-    .activity-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-    .log-entry{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.85rem;margin-bottom:.5rem;font-weight:600;font-size:.85rem}
-    .log-entry:last-child{margin-bottom:0}
-    .log-entry-header{display:flex;justify-content:space-between;align-items:flex-start}
-    .log-hrs{color:var(--green);font-weight:800}
-    .log-ts{font-size:.7rem;display:block;margin-top:.2rem;font-weight:500;color:var(--text3)}
-    .log-empty{text-align:center;font-weight:700;font-size:.95rem;padding:2.5rem;color:var(--text3)}
-    .delete-log-btn{background:none;border:none;cursor:pointer;opacity:.3;transition:opacity .2s;min-height:auto;display:flex;align-items:center;justify-content:center;width:28px;height:28px}
-    .delete-log-btn:hover{opacity:.8}
-    .delete-log-btn svg{width:14px;height:14px;fill:none;stroke:var(--red);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .log-bento {
+      background: var(--surface)
+    }
+
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .6rem
+    }
+
+    .activity-header .view-title {
+      margin: 0;
+      font-size: 1.1rem
+    }
+
+    .activity-header select {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      font-weight: 600;
+      padding: .3rem .6rem;
+      font-family: inherit;
+      font-size: .7rem;
+      cursor: pointer
+    }
+
+    .activity-scroll {
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: .25rem
+    }
+
+    .activity-scroll::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .activity-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 2px
+    }
+
+    .log-entry {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: .85rem;
+      margin-bottom: .5rem;
+      font-weight: 600;
+      font-size: .85rem
+    }
+
+    .log-entry:last-child {
+      margin-bottom: 0
+    }
+
+    .log-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    .log-hrs {
+      color: var(--green);
+      font-weight: 800
+    }
+
+    .log-ts {
+      font-size: .7rem;
+      display: block;
+      margin-top: .2rem;
+      font-weight: 500;
+      color: var(--text3)
+    }
+
+    .log-empty {
+      text-align: center;
+      font-weight: 700;
+      font-size: .95rem;
+      padding: 2.5rem;
+      color: var(--text3)
+    }
+
+    .delete-log-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: .3;
+      transition: opacity .2s;
+      min-height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px
+    }
+
+    .delete-log-btn:hover {
+      opacity: .8
+    }
+
+    .delete-log-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: var(--red);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
 
     /* === TOAST === */
-    .toast{position:fixed;top:1rem;left:1rem;right:1rem;background:var(--green);color:#000;border:none;border-radius:var(--r-pill);padding:.85rem 1.25rem;font-weight:800;font-size:.9rem;z-index:1000;transform:translateY(-120%);transition:transform .4s var(--spring);text-align:center}
-    .toast.show{transform:translateY(0)}
+    .toast {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      right: 1rem;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: var(--r-pill);
+      padding: .85rem 1.25rem;
+      font-weight: 800;
+      font-size: .9rem;
+      z-index: 1000;
+      transform: translateY(calc(-100% - 2rem));
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .4s var(--spring), opacity .4s ease;
+      text-align: center
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto
+    }
 
     /* === OVERLAYS === */
-    .winner-overlay,.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;display:flex;opacity:0;pointer-events:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(12px);transition:opacity .25s}
-    .winner-overlay.show,.settings-overlay.show{opacity:1;pointer-events:auto}
-    .winner-box,.settings-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem 1.5rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;transform:scale(.96);transition:transform .3s var(--spring)}
-    .settings-overlay.show .settings-box,.winner-overlay.show .winner-box{transform:scale(1)}
-    .winner-box{text-align:center}
-    .settings-box{text-align:left}
-    .settings-box .bento-title{margin-bottom:1.25rem;font-size:1.1rem;color:var(--text)}
-    .winner-ship{font-size:1.5rem;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:50%;background:var(--surface2);border:2px solid var(--yellow);margin:0 auto .75rem;font-weight:800;color:var(--yellow);letter-spacing:.02em}
-    .winner-headline{font-size:clamp(1.8rem,5vw,2.5rem);font-weight:800;text-transform:uppercase;margin-bottom:.5rem;line-height:1;letter-spacing:-.04em;color:var(--yellow)}
-    .winner-sub{font-size:1.1rem;font-weight:600;margin-bottom:1.5rem;color:var(--text2)}
-    .winner-dismiss{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--r-pill);padding:.85rem 2rem;font-family:inherit;font-weight:800;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:background .2s}
-    .winner-dismiss:hover{background:var(--surface3)}
+    .winner-overlay,
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .92);
+      z-index: 2000;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(12px);
+      transition: opacity .25s
+    }
+
+    .winner-overlay.show,
+    .settings-overlay.show {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .winner-box,
+    .settings-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 2rem 1.5rem;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(.96);
+      transition: transform .3s var(--spring)
+    }
+
+    .settings-overlay.show .settings-box,
+    .winner-overlay.show .winner-box {
+      transform: scale(1)
+    }
+
+    .winner-box {
+      text-align: center
+    }
+
+    .settings-box {
+      text-align: left
+    }
+
+    .settings-box .bento-title {
+      margin-bottom: 1.25rem;
+      font-size: 1.1rem;
+      color: var(--text)
+    }
+
+    .winner-ship {
+      font-size: 1.5rem;
+      margin-bottom: .5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 2px solid var(--yellow);
+      margin: 0 auto .75rem;
+      font-weight: 800;
+      color: var(--yellow);
+      letter-spacing: .02em
+    }
+
+    .winner-headline {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: .5rem;
+      line-height: 1;
+      letter-spacing: -.04em;
+      color: var(--yellow)
+    }
+
+    .winner-sub {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text2)
+    }
+
+    .winner-dismiss {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      padding: .85rem 2rem;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s
+    }
+
+    .winner-dismiss:hover {
+      background: var(--surface3)
+    }
 
     /* === SETTINGS === */
-    .crew-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-bottom:.75rem;display:flex;flex-direction:column;gap:.4rem}
-    .crew-row{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
-    .crew-row input,.crew-member-row input{flex:1;border:1px solid var(--border);border-radius:10px;padding:.55rem;font-weight:600;min-width:0;background:var(--bg);color:var(--text);font-size:.85rem}
-    .crew-row .ship-inp{flex:0 0 50px;text-align:center;font-size:1.2rem}
-    .crew-row .color-inp{flex:0 0 44px;padding:0;height:44px;cursor:pointer;border-radius:10px;border:1px solid var(--border)}
-    .crew-row .del-btn,.del-m-btn,.add-m-btn{background:var(--red);color:#fff;border:none;border-radius:10px;font-weight:800;padding:.55rem;cursor:pointer;height:44px;transition:opacity .2s;font-size:.8rem}
-    .del-m-btn{padding:0 .6rem!important}
-    .add-m-btn{background:var(--green);color:#000;height:auto;padding:.35rem .65rem;width:fit-content;margin-top:.4rem!important;font-size:.75rem}
-    .settings-actions{display:flex;gap:.6rem;margin-top:1.5rem;flex-wrap:wrap}
-    .settings-actions button{flex:1;padding:.85rem;font-weight:800;text-transform:uppercase;border:1px solid var(--border);border-radius:var(--r-pill);cursor:pointer;transition:opacity .2s;font-size:.85rem;min-width:80px}
-    .settings-actions button.save-btn{background:var(--green);color:#000;border:none}
-    .settings-actions button.add-btn{background:var(--pink);color:#000;border:none}
-    .settings-actions button.cancel-btn{background:var(--surface2);color:var(--text)}
+    .crew-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 1rem;
+      margin-bottom: .75rem;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem
+    }
+
+    .crew-row {
+      display: flex;
+      gap: .4rem;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .crew-row input,
+    .crew-member-row input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .55rem;
+      font-weight: 600;
+      min-width: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-size: .85rem
+    }
+
+    .crew-row .ship-inp {
+      flex: 0 0 50px;
+      text-align: center;
+      font-size: 1.2rem
+    }
+
+    .crew-row .color-inp {
+      flex: 0 0 44px;
+      padding: 0;
+      height: 44px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: 1px solid var(--border)
+    }
+
+    .crew-row .del-btn,
+    .del-m-btn,
+    .add-m-btn {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      padding: .55rem;
+      cursor: pointer;
+      height: 44px;
+      transition: opacity .2s;
+      font-size: .8rem
+    }
+
+    .del-m-btn {
+      padding: 0 .6rem !important
+    }
+
+    .add-m-btn {
+      background: var(--green);
+      color: #000;
+      height: auto;
+      padding: .35rem .65rem;
+      width: fit-content;
+      margin-top: .4rem !important;
+      font-size: .75rem
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: .6rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap
+    }
+
+    .settings-actions button {
+      flex: 1;
+      padding: .85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      cursor: pointer;
+      transition: opacity .2s;
+      font-size: .85rem;
+      min-width: 80px
+    }
+
+    .settings-actions button.save-btn {
+      background: var(--green);
+      color: #000;
+      border: none
+    }
+
+    .settings-actions button.add-btn {
+      background: var(--pink);
+      color: #000;
+      border: none
+    }
+
+    .settings-actions button.cancel-btn {
+      background: var(--surface2);
+      color: var(--text)
+    }
 
     /* === BANNER === */
-    .challenge-ended-banner{background:var(--red);color:#fff;text-align:center;font-weight:800;font-size:.9rem;padding:.6rem;text-transform:uppercase;display:none;border-radius:var(--r-sm);margin-bottom:.75rem}
-    .challenge-ended-banner.show{display:block}
+    .challenge-ended-banner {
+      background: var(--red);
+      color: #fff;
+      text-align: center;
+      font-weight: 800;
+      font-size: .9rem;
+      padding: .6rem;
+      text-transform: uppercase;
+      display: none;
+      border-radius: var(--r-sm);
+      margin-bottom: .75rem
+    }
+
+    .challenge-ended-banner.show {
+      display: block
+    }
 
     /* Force-hide any top-level pseudo borders */
-    html::before, body::before {
+    html::before,
+    body::before {
       display: none !important;
     }
+
     .map-svg path[stroke="url(#trackGlow)"] {
-      stroke: rgba(255,255,255,0.05) !important;
+      stroke: rgba(255, 255, 255, 0.05) !important;
     }
-    * { border-top: none !important; }
+
+    * {
+      border-top: none !important;
+    }
 
     body {
       border-top: 0 !important;
       margin-top: 0 !important;
       padding-top: 0 !important;
     }
+
     #challengeEndedBanner {
       margin-top: 0 !important;
       border-radius: 0 !important;
     }
   </style>
 </head>
-<body><div class="challenge-ended-banner" id="challengeEndedBanner">CHALLENGE ENDED</div><div class="toast" id="toast"></div>
+
+<body>
+  <div class="toast" id="toast"></div>
 
   <!-- Winner Overlay -->
   <div class="winner-overlay" id="winnerOverlay">
     <div class="winner-box">
-      <span class="winner-ship" id="winnerShipBig"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span>
+      <span class="winner-ship" id="winnerShipBig"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+          <line x1="4" y1="22" x2="4" y2="15" />
+        </svg></span>
       <div class="winner-headline">ONE PIECE FOUND!</div>
       <div class="winner-sub" id="winnerSubText">The Straw Hats claim the treasure!</div>
-      <p id="winnerDebugText" style="font-size:.85rem;font-weight:700;color:var(--text2);margin-top:.5rem;margin-bottom:1rem;background:var(--bg);border:1px dashed var(--border);padding:.5rem;display:inline-block;border-radius:10px;"></p><br>
+      <p id="winnerDebugText"
+        style="font-size:.85rem;font-weight:700;color:var(--text2);margin-top:.5rem;margin-bottom:1rem;background:var(--bg);border:1px dashed var(--border);padding:.5rem;display:inline-block;border-radius:10px;">
+      </p><br>
       <button class="winner-dismiss" id="winnerDismissBtn">BACK TO START</button>
     </div>
   </div>
@@ -217,15 +1105,22 @@
   <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-box">
       <h2 class="bento-title" style="font-size:1.1rem;color:var(--text);">Captain's Quarters</h2>
-      <div style="background:var(--surface2);border:1px solid var(--border);padding:1rem;margin-bottom:1.25rem;border-radius:14px;">
-        <h3 style="font-weight:800;margin-bottom:.4rem;text-transform:uppercase;color:var(--text);font-size:.8rem;letter-spacing:.04em;">Voyage Settings</h3>
+      <div
+        style="background:var(--surface2);border:1px solid var(--border);padding:1rem;margin-bottom:1.25rem;border-radius:14px;">
+        <h3
+          style="font-weight:800;margin-bottom:.4rem;text-transform:uppercase;color:var(--text);font-size:.8rem;letter-spacing:.04em;">
+          Voyage Settings</h3>
         <div style="display:flex;gap:.75rem;align-items:center;color:var(--text);">
           <label style="font-weight:600;font-size:.8rem;color:var(--text2);">Current Day (1-7):</label>
-          <input type="number" id="currentDayInp" min="1" max="7" style="border:1px solid var(--border);padding:.4rem;font-weight:700;width:60px;background:var(--bg);color:var(--text);border-radius:8px;font-size:.9rem;">
+          <input type="number" id="currentDayInp" min="1" max="7"
+            style="border:1px solid var(--border);padding:.4rem;font-weight:700;width:60px;background:var(--bg);color:var(--text);border-radius:8px;font-size:.9rem;">
         </div>
-        <div style="font-size:.7rem;margin-top:.4rem;color:var(--text3);font-weight:500;">* Manually adjust the ongoing day.</div>
+        <div style="font-size:.7rem;margin-top:.4rem;color:var(--text3);font-weight:500;">* Manually adjust the ongoing
+          day.</div>
       </div>
-      <h3 style="font-weight:800;margin-bottom:.75rem;text-transform:uppercase;font-size:.9rem;color:var(--text);letter-spacing:.03em;">Crew Rosters</h3>
+      <h3
+        style="font-weight:800;margin-bottom:.75rem;text-transform:uppercase;font-size:.9rem;color:var(--text);letter-spacing:.03em;">
+        Crew Rosters</h3>
       <div id="teamsEditor"></div>
       <div class="settings-actions">
         <button class="add-btn" id="addCrewBtn">Add Crew</button>
@@ -233,7 +1128,9 @@
         <button class="cancel-btn" id="closeSettingsBtn">Close</button>
       </div>
       <div style="margin-top:.75rem;text-align:center;">
-        <button id="resetDefaultsBtn" style="background:transparent;color:var(--red);border:1px dashed var(--red);padding:.4rem .75rem;font-weight:800;cursor:pointer;text-transform:uppercase;border-radius:999px;font-size:.75rem;">Reset Race</button>
+        <button id="resetDefaultsBtn"
+          style="background:transparent;color:var(--red);border:1px dashed var(--red);padding:.4rem .75rem;font-weight:800;cursor:pointer;text-transform:uppercase;border-radius:999px;font-size:.75rem;">Reset
+          Race</button>
       </div>
     </div>
   </div>
@@ -248,28 +1145,52 @@
           <h1>Grand Line Race</h1>
           <p>One Piece Study Tracker</p>
         </div>
-        <button id="settingsBtn" class="settings-btn" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        <button id="settingsBtn" class="settings-btn" title="Settings"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg></button>
       </header>
 
       <div class="stats-grid" id="bento-stats">
         <div class="stat-box teal">
-          <span class="stat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> <span id="clockEl">--:--:--</span>
+          <span class="stat-ico"><svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg></span> <span id="clockEl">--:--:--</span>
         </div>
-        <div class="stat-box magenta day-box" style="flex-direction:column;align-items:stretch;gap:.35rem;justify-content:center;">
+        <div class="stat-box magenta day-box"
+          style="flex-direction:column;align-items:stretch;gap:.35rem;justify-content:center;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><span class="stat-ico" style="display:inline-flex;vertical-align:middle;margin-right:2px"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> DAY <span id="dayEl" style="margin:0 2px;">1</span>/7</div>
+            <div><span class="stat-ico" style="display:inline-flex;vertical-align:middle;margin-right:2px"><svg
+                  viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg></span> DAY <span id="dayEl" style="margin:0 2px;">1</span>/7</div>
             <div>
               <button class="day-btn" id="prevDayBtn" title="Prev">◀</button>
               <button class="day-btn" id="nextDayBtn" title="Next">▶</button>
             </div>
           </div>
-          <button id="toggleDayBtn" style="background:var(--surface2);border:1px solid var(--border);font-weight:800;font-family:inherit;padding:3px;cursor:pointer;">START DAY 1</button>
+          <button id="toggleDayBtn"
+            style="background:var(--surface2);border:1px solid var(--border);font-weight:800;font-family:inherit;padding:3px;cursor:pointer;">START
+            DAY 1</button>
         </div>
         <div class="stat-box red">
-          <span class="stat-ico"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> TOTAL: <span id="totalEl">0</span> HRS
+          <span class="stat-ico"><svg viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg></span> TOTAL: <span id="totalEl">0</span> HRS
         </div>
         <div class="stat-box">
-          <span class="stat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> GOAL: <span id="globalGoalsEl">0</span> HRS
+          <span class="stat-ico"><svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg></span> GOAL: <span id="globalGoalsEl">0</span> HRS
         </div>
       </div>
 
@@ -280,28 +1201,47 @@
             <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="trackGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="rgba(255,255,255,0.15)" stop-opacity="0.3"/>
-                  <stop offset="50%" stop-color="rgba(255,255,255,0.1)" stop-opacity="0.3"/>
-                  <stop offset="100%" stop-color="rgba(255,255,255,0.15)" stop-opacity="0.3"/>
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.15)" stop-opacity="0.3" />
+                  <stop offset="50%" stop-color="rgba(255,255,255,0.1)" stop-opacity="0.3" />
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.15)" stop-opacity="0.3" />
                 </linearGradient>
               </defs>
-              <path d="M 60 80 L 1140 80" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
-              <path d="M 60 150 L 1140 150" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
-              <path d="M 60 250 L 1140 250" fill="none" stroke="url(#trackGlow)" stroke-width="3" stroke-dasharray="8 6"/>
-              <path d="M 60 250 L 1140 250" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="40"/>
-              <path d="M 60 350 L 1140 350" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
-              <path d="M 60 420 L 1140 420" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
-              <path d="M 60 490 L 1140 490" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+              <path d="M 60 80 L 1140 80" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+              <path d="M 60 150 L 1140 150" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+              <path d="M 60 250 L 1140 250" fill="none" stroke="url(#trackGlow)" stroke-width="3"
+                stroke-dasharray="8 6" />
+              <path d="M 60 250 L 1140 250" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="40" />
+              <path d="M 60 350 L 1140 350" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+              <path d="M 60 420 L 1140 420" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+              <path d="M 60 490 L 1140 490" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1" />
             </svg>
-            <div class="waypoint" style="offset-distance:0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
-            <div class="waypoint" style="offset-distance:12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
-            <div class="waypoint" style="offset-distance:25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
-            <div class="waypoint" style="offset-distance:37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
-            <div class="waypoint" style="offset-distance:50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
-            <div class="waypoint" style="offset-distance:62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
-            <div class="waypoint" style="offset-distance:75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
-            <div class="waypoint" style="offset-distance:87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
-            <div class="waypoint" style="offset-distance:100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
+            <div class="waypoint" style="offset-distance:0%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span>
+            </div>
+            <div class="waypoint" style="offset-distance:12.5%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span>
+            </div>
+            <div class="waypoint" style="offset-distance:25%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span>
+            </div>
+            <div class="waypoint" style="offset-distance:37.5%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span>
+            </div>
+            <div class="waypoint" style="offset-distance:50%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span>
+            </div>
+            <div class="waypoint" style="offset-distance:62.5%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span>
+            </div>
+            <div class="waypoint" style="offset-distance:75%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span>
+            </div>
+            <div class="waypoint" style="offset-distance:87.5%">
+              <div class="waypoint-icon"></div><span class="waypoint-text">Wano</span>
+            </div>
+            <div class="waypoint" style="offset-distance:100%">
+              <div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span>
+            </div>
             <div id="shipsTrack"></div>
           </div>
         </div>
@@ -338,7 +1278,8 @@
     <div id="tab-activity" class="tab-view">
       <div class="activity-header">
         <h2 class="view-title">Captain's Log</h2>
-        <select id="logTeamFilter" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:999px;font-weight:600;padding:.3rem .5rem;font-family:inherit;max-width:120px;cursor:pointer;font-size:.7rem;">
+        <select id="logTeamFilter"
+          style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:999px;font-weight:600;padding:.3rem .5rem;font-family:inherit;max-width:120px;cursor:pointer;font-size:.7rem;">
           <option value="ALL">All Crews</option>
         </select>
       </div>
@@ -351,10 +1292,28 @@
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-tab="map"><span class="nav-ico"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>Map</button>
-    <button class="nav-btn" data-tab="leaderboard"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22V8a2 2 0 0 0-2-2H6v0a2 2 0 0 0-2 2v0c0 4.418 3.582 8 8 8s8-3.582 8-8v0a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v14"/></svg></span>Rank</button>
-    <button class="nav-btn" data-tab="log"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>Log</button>
-    <button class="nav-btn" data-tab="activity"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>Logs</button>
+    <button class="nav-btn active" data-tab="map"><span class="nav-ico"><svg viewBox="0 0 24 24">
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+          <line x1="8" y1="2" x2="8" y2="18" />
+          <line x1="16" y1="6" x2="16" y2="22" />
+        </svg></span>Map</button>
+    <button class="nav-btn" data-tab="leaderboard"><span class="nav-ico"><svg viewBox="0 0 24 24">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+          <path
+            d="M10 22V8a2 2 0 0 0-2-2H6v0a2 2 0 0 0-2 2v0c0 4.418 3.582 8 8 8s8-3.582 8-8v0a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v14" />
+        </svg></span>Rank</button>
+    <button class="nav-btn" data-tab="log"><span class="nav-ico"><svg viewBox="0 0 24 24">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+        </svg></span>Log</button>
+    <button class="nav-btn" data-tab="activity"><span class="nav-ico"><svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+        </svg></span>Logs</button>
   </nav>
 
 
@@ -602,7 +1561,7 @@
 
       if (day > 7) {
         document.getElementById('dayEl').textContent = '7';
-        document.getElementById('challengeEndedBanner').classList.add('show');
+        document.getElementById('challengeEndedBanner')?.classList.add('show');
         document.getElementById('logBtn').disabled = true;
 
         if (!winnerTriggered) {
@@ -625,7 +1584,7 @@
         }
       } else {
         document.getElementById('dayEl').textContent = day;
-        document.getElementById('challengeEndedBanner').classList.remove('show');
+        document.getElementById('challengeEndedBanner')?.classList.remove('show');
         document.getElementById('logBtn').disabled = false;
         winnerTriggered = false;
       }
@@ -1060,28 +2019,28 @@
 
   <script>
     // Tab switching
-    var TAB_IDS = ['tab-map','tab-leaderboard','tab-log','tab-activity'];
-    window.switchTab = function(tab) {
-      document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});
-      TAB_IDS.forEach(function(id){
-        var el=document.getElementById(id);
-        if(el) el.classList.toggle('tab-active',id==='tab-'+tab);
+    var TAB_IDS = ['tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
+    window.switchTab = function (tab) {
+      document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === tab); });
+      TAB_IDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle('tab-active', id === 'tab-' + tab);
       });
-      var c=document.querySelector('.app-content');
-      if(c) c.scrollTop=0;
+      var c = document.querySelector('.app-content');
+      if (c) c.scrollTop = 0;
     };
-    document.querySelectorAll('.nav-btn[data-tab]').forEach(function(b){
-      b.addEventListener('click',function(){switchTab(b.dataset.tab);});
+    document.querySelectorAll('.nav-btn[data-tab]').forEach(function (b) {
+      b.addEventListener('click', function () { switchTab(b.dataset.tab); });
     });
     switchTab('map');
   </script>
 
   <script>
     // Last resort: find and kill any injected green bar
-    (function() {
+    (function () {
       const killBar = () => {
         const bar = document.querySelector('.preact-border-shadow-host') ||
-                    document.querySelector('[class^="preact-"]');
+          document.querySelector('[class^="preact-"]');
         if (bar) { bar.style.display = 'none'; bar.remove(); }
       };
       killBar();
@@ -1090,4 +2049,5 @@
     })();
   </script>
 </body>
+
 </html>
