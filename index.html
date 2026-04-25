@@ -5,311 +5,287 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#F9F9F6">
+  <meta name="theme-color" content="#000000">
   <title>Grand Line Race — One Piece Study Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{--bg-alabaster:#F9F9F6;--black:#0F0F0F;--white:#FFFFFF;--teal:#2EC4B6;--magenta:#E71D36;--yellow:#FF9F1C;--red:#D90429;--border-w:4px;--br:12px;--spring:cubic-bezier(.175,.885,.32,1.275);--map-path:path('M 60 250 L 1140 250');--bg-beige:var(--bg-alabaster)}
+    :root{
+      --bg:#000;--surface:#161618;--surface2:#1e1e22;--surface3:#252528;
+      --border:rgba(255,255,255,.08);--border-h:rgba(255,255,255,.14);
+      --text:#fff;--text2:rgba(255,255,255,.5);--text3:rgba(255,255,255,.3);
+      --green:#4ADE80;--pink:#F472B6;--yellow:#FACC15;--blue:#38BDF8;--red:#EF4444;
+      --r:20px;--r-sm:14px;--r-pill:999px;
+      --spring:cubic-bezier(.175,.885,.32,1.275);--map-path:path('M 60 250 L 1140 250');
+      /* Script compat */
+      --bg-alabaster:#0a0a0a;--bg-beige:#1e1e22;--black:rgba(255,255,255,.55);--white:#161618;
+      --teal:#4ADE80;--magenta:#F472B6;--border-w:1px
+    }
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:100%;max-width:100vw;overflow-x:hidden;position:relative}
-    body{background:var(--bg-alabaster);color:var(--black);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh;line-height:1.6;padding:0}
-    body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.25;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")}
-    input,select,button{min-height:48px}
-    .challenge-ended-banner{background:var(--red);color:var(--white);text-align:center;font-weight:900;font-size:clamp(1rem,3vw,1.5rem);padding:1rem;border-bottom:var(--border-w) solid var(--black);text-transform:uppercase;letter-spacing:-.03em;display:none}
-    .challenge-ended-banner.show{display:block}
+    html{height:100%}
+    body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%;display:flex;flex-direction:column;overflow-x:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
+    input,select,button{min-height:44px;font-family:inherit;color:var(--text)}
 
-    /* === DASHBOARD GRID === */
-    .container{display:grid;grid-template-columns:350px 1fr;gap:2rem;max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
-    .sidebar{display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto}
-    .sidebar::-webkit-scrollbar{width:6px}
-    .sidebar::-webkit-scrollbar-thumb{background:var(--black);border-radius:3px}
-    .main-content{display:flex;flex-direction:column;gap:2rem;min-width:0}
+    /* === APP SHELL === */
+    .app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:1rem 1rem calc(72px + env(safe-area-inset-bottom) + .5rem);-webkit-overflow-scrolling:touch;max-width:560px;margin:0 auto;width:100%}
+    .app-content::-webkit-scrollbar{display:none}
 
-    /* === BENTO BASE === */
-    .bento{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:6px 6px 0px var(--black);padding:2rem;position:relative;min-width:0}
-    .bento-title{font-size:clamp(1.25rem,2.5vw,2rem);font-weight:900;text-transform:uppercase;letter-spacing:-.03em;border-bottom:var(--border-w) solid var(--black);padding-bottom:.5rem;display:inline-block;color:inherit;line-height:1.1}
+    /* === TABS === */
+    .tab-view{display:none;animation:fadeUp .3s ease}
+    .tab-view.tab-active{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* === BOTTOM NAV === */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(0,0,0,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:500}
+    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-size:.65rem;font-weight:600;color:var(--text3);letter-spacing:.02em;transition:color .2s}
+    .nav-btn .nav-ico{width:20px;height:20px;transition:transform .2s var(--spring);display:flex;align-items:center;justify-content:center}
+    .nav-btn .nav-ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .nav-btn.active{color:var(--green)}
+    .nav-btn.active .nav-ico{transform:scale(1.1)}
 
     /* === HEADER === */
-    .header-bento{background:var(--yellow);padding:1.5rem 2rem}
-    .header-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
-    .header-bento h1{font-size:clamp(1.8rem,4vw,3.5rem);font-weight:900;text-transform:uppercase;letter-spacing:-.04em;line-height:1}
-    .header-bento p{font-size:clamp(.85rem,1.5vw,1.2rem);font-weight:700;margin-top:.5rem;letter-spacing:-.02em}
-    .settings-btn{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);font-size:1.5rem;padding:.5rem;cursor:pointer;box-shadow:4px 4px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring);flex-shrink:0}
-    .settings-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--black)}
-    .settings-btn:active{transform:translate(4px,4px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+    .app-header{margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:flex-start}
+    .app-header h1{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+    .app-header p{font-size:.8rem;font-weight:500;color:var(--text2);margin-top:.2rem}
+    .settings-btn{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s;flex-shrink:0}
+    .settings-btn:hover{background:var(--surface2);transform:rotate(30deg)}
+    .settings-btn svg{width:18px;height:18px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+    /* === CARDS === */
+    .bento{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;position:relative;min-width:0}
+    .bento-title{font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);border:none;display:block;margin-bottom:.75rem}
+    .view-title{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;margin-bottom:1rem}
 
     /* === STATS === */
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-    .stat-box{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:6px 6px 0px var(--black);padding:1rem;display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:clamp(.85rem,1.2vw,1.15rem);letter-spacing:-.02em}
-    .stat-box.teal{background:var(--teal)}
-    .stat-box.magenta{background:var(--magenta);color:var(--white)}
-    .stat-box.red{background:var(--red);color:var(--white)}
-    .day-btn{background:transparent;border:none;color:inherit;font-size:1.2rem;cursor:pointer;padding:0 4px;transition:transform .2s var(--spring)}
-    .day-btn:hover{transform:scale(1.3)}
-    .day-btn:active{transform:scale(.9);transition:transform .05s}
-    #toggleDayBtn{border:var(--border-w) solid var(--black)!important;border-radius:calc(var(--br) - 4px);box-shadow:4px 4px 0px var(--black)!important;transition:transform .3s var(--spring),box-shadow .3s var(--spring)!important;padding:.6rem!important;font-size:.9rem;letter-spacing:-.02em}
-    #toggleDayBtn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--black)!important}
-    #toggleDayBtn:active{transform:translate(4px,4px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s!important}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+    .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:.7rem .65rem;display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:.8rem}
+    .stat-ico{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .stat-ico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .stat-box.teal{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2)}
+    .stat-box.teal span:first-child+span{color:var(--green)}
+    .stat-box.magenta{background:rgba(244,114,182,.08);border-color:rgba(244,114,182,.2)}
+    .stat-box.red{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2)}
+    .stat-box.red span:first-child{color:var(--red)}
+    .day-btn{background:none;border:none;color:var(--text2);font-size:.9rem;cursor:pointer;padding:0 2px;transition:color .15s}
+    .day-btn:hover{color:var(--text)}
+    #toggleDayBtn{border:1px solid var(--border)!important;border-radius:var(--r-sm);background:var(--surface2)!important;color:var(--text)!important;font-weight:700;font-family:inherit;padding:.35rem!important;font-size:.65rem;cursor:pointer;transition:background .2s!important;box-shadow:none!important}
 
     /* === MAP === */
-    .map-bento{background:var(--teal);padding:2rem 0}
-    .map-bento .bento-title{margin:0 2rem 1.5rem 2rem;color:var(--black)}
-    .map-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:var(--border-w) solid var(--black);border-bottom:var(--border-w) solid var(--black);background:var(--bg-alabaster)}
-    .map-scroll::-webkit-scrollbar{height:14px}
-    .map-scroll::-webkit-scrollbar-track{background:var(--bg-alabaster);border-top:var(--border-w) solid var(--black)}
-    .map-scroll::-webkit-scrollbar-thumb{background:var(--black);border:3px solid var(--bg-alabaster)}
-    .map-inner{position:relative;min-width:1200px;width:1200px;height:600px;margin:0 auto}
+    .map-bento{background:var(--surface);padding:1.25rem 0;overflow:hidden}
+    .map-bento .bento-title{margin:0 1.25rem .75rem;color:var(--green);font-size:.8rem}
+    .map-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg)}
+    .map-scroll::-webkit-scrollbar{height:4px}
+    .map-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+    .map-inner{position:relative;min-width:1200px;width:1200px;height:550px;margin:0 auto}
     .map-svg{position:absolute;top:0;left:0;width:100%;height:100%}
     .waypoint{position:absolute;left:0;top:0;offset-path:var(--map-path);offset-rotate:0deg;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:5}
-    .waypoint-icon{width:24px;height:24px;background:var(--yellow);border:var(--border-w) solid var(--black);border-radius:50%}
-    .end-icon{background:var(--red);width:36px;height:36px}
-    .waypoint-text{position:absolute;top:100%;margin-top:2px;font-weight:900;text-transform:uppercase;background:var(--white);border:var(--border-w) solid var(--black);border-radius:8px;padding:4px 10px;font-size:.85rem;letter-spacing:-.02em;white-space:nowrap;box-shadow:2px 2px 0px var(--black)}
-    .ship-unit{position:absolute;left:0;top:0;offset-rotate:0deg;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-50% + var(--scatter-y,0px)));z-index:10;transition:offset-distance .4s var(--spring),transform .2s;width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:var(--ship-color,var(--white));border:var(--border-w) solid var(--black);border-radius:50%;font-size:1.8rem;box-shadow:4px 4px 0px var(--black);cursor:pointer}
-    .ship-unit::after{content:'';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid var(--black);z-index:-1}
-    .ship-unit:hover{z-index:100!important;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-55% + var(--scatter-y,0px))) scale(1.1);box-shadow:6px 6px 0px var(--black)}
-    .ship-pct{position:absolute;top:100%;margin-top:15px;font-size:.85rem;font-weight:900;background:var(--white);border:2px solid var(--black);border-radius:6px;padding:2px 6px;color:var(--black);line-height:1;box-shadow:2px 2px 0px var(--black);pointer-events:none;white-space:nowrap}
+    .waypoint-icon{width:16px;height:16px;background:var(--yellow);border:2px solid rgba(250,204,21,.4);border-radius:50%;box-shadow:0 0 12px rgba(250,204,21,.25)}
+    .end-icon{background:var(--red);width:22px;height:22px;border-color:rgba(239,68,68,.4);box-shadow:0 0 14px rgba(239,68,68,.3)}
+    .waypoint-text{position:absolute;top:100%;margin-top:6px;font-weight:700;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:2px 8px;font-size:.6rem;letter-spacing:.03em;white-space:nowrap;color:var(--text2)}
+    .ship-unit{position:absolute;left:0;top:0;offset-rotate:0deg;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-50% + var(--scatter-y,0px)));z-index:10;transition:offset-distance .5s var(--spring),transform .2s;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--ship-color,var(--surface));border:2px solid rgba(255,255,255,.12);border-radius:50%;font-size:.7rem;font-weight:800;letter-spacing:.03em;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 0 20px rgba(0,0,0,.5);cursor:pointer}
+    .ship-unit::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid rgba(255,255,255,.1)}
+    .ship-unit:hover{z-index:100!important;transform:translate(calc(-50% + var(--scatter-x,0px)),calc(-55% + var(--scatter-y,0px))) scale(1.15);box-shadow:0 0 24px rgba(74,222,128,.2)}
+    .ship-pct{position:absolute;top:100%;margin-top:10px;font-size:.65rem;font-weight:800;background:var(--green);color:#000;border:none;border-radius:var(--r-pill);padding:1px 6px;line-height:1.2;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(74,222,128,.3)}
 
     /* === LEADERBOARD === */
-    .leaderboard-bento{background:var(--magenta)}
-    .leaderboard-bento .bento-title{color:var(--white);text-shadow:3px 3px 0px var(--black)}
-    .team-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem}
-    .team-card{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:8px 8px 0px var(--black);padding:2rem 1.5rem;text-align:center;position:relative;transition:transform .3s var(--spring),box-shadow .3s var(--spring)}
-    .team-card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--black)}
-    .rank-badge{position:absolute;top:-12px;right:-12px;background:var(--yellow);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);font-weight:900;font-size:1.4rem;padding:6px 14px;box-shadow:4px 4px 0px var(--black);letter-spacing:-.02em}
-    .card-ship{font-size:3.5rem;margin-bottom:.5rem;display:block}
-    .card-name{font-weight:900;font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:-.03em;line-height:1.1}
-    .card-members{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;border-radius:calc(var(--br) - 6px)}
-    .card-hours{font-size:clamp(1.6rem,2.5vw,2.5rem);font-weight:900;letter-spacing:-.04em}
-    .prog-bar-container{width:100%;height:28px;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);background:var(--bg-alabaster);margin-top:1.5rem;position:relative;overflow:hidden;box-shadow:inset 3px 3px 6px rgba(0,0,0,.1)}
-    .prog-fill{height:100%;background:var(--fill-color,var(--teal));border-right:var(--border-w) solid var(--black);transition:width .6s cubic-bezier(.34,1.56,.64,1);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.15) 0px,rgba(255,255,255,.15) 10px,transparent 10px,transparent 20px);background-size:28px 28px;animation:stripeScroll 2s linear infinite}
-    @keyframes stripeScroll{0%{background-position:0 0}100%{background-position:28px 0}}
+    .team-cards-grid{display:flex;flex-direction:column;gap:.75rem}
+    .team-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;text-align:center;position:relative;transition:transform .25s var(--spring)}
+    .team-card:hover{transform:translateY(-2px)}
+    .rank-badge{position:absolute;top:.75rem;right:.75rem;background:var(--yellow);color:#000;border:none;border-radius:var(--r-pill);font-weight:800;font-size:.75rem;padding:3px 10px}
+    .card-ship{font-size:1rem;margin-bottom:.15rem;display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);margin:0 auto .25rem;font-weight:800;letter-spacing:.04em;color:var(--text2)}
+    .card-name{font-weight:800;font-size:1.1rem;margin-bottom:.1rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1.1}
+    .card-members{font-size:.85rem;font-weight:600;margin-bottom:.75rem;border-radius:var(--r-sm)}
+    .card-hours{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;color:var(--green)}
+    .prog-bar-container{width:100%;height:14px;border:none;border-radius:var(--r-pill);background:var(--surface3);margin-top:.75rem;position:relative;overflow:hidden}
+    .prog-fill{height:100%;background:var(--fill-color,var(--green));transition:width .6s cubic-bezier(.34,1.56,.64,1);border-radius:var(--r-pill);background-image:none;animation:none}
 
     /* === FORM === */
-    .form-bento{background:var(--yellow)}
-    .form-row{margin-bottom:1.25rem}
-    .form-lbl{display:block;font-weight:900;margin-bottom:.5rem;text-transform:uppercase;font-size:1rem;letter-spacing:-.02em}
-    .form-ctrl{width:100%;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 6px);padding:1rem;font-family:inherit;font-weight:700;font-size:1rem;background:var(--white);box-shadow:6px 6px 0px var(--black);transition:box-shadow .2s var(--spring),transform .2s var(--spring);-webkit-appearance:none}
-    .form-ctrl:focus{outline:none;transform:translate(2px,2px);box-shadow:4px 4px 0px var(--black)}
-    .log-btn{width:100%;background:var(--red);color:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1rem;font-family:inherit;font-weight:900;font-size:1.2rem;text-transform:uppercase;letter-spacing:-.02em;cursor:pointer;box-shadow:8px 8px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring);margin-top:.75rem}
-    .log-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:10px 10px 0px var(--black)}
-    .log-btn:active{transform:translate(6px,6px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
-    .log-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:8px 8px 0px var(--black)}
+    .form-bento{background:var(--surface)}
+    .form-row{margin-bottom:.85rem}
+    .form-lbl{display:block;font-weight:700;margin-bottom:.3rem;text-transform:uppercase;font-size:.7rem;letter-spacing:.06em;color:var(--text2)}
+    .form-ctrl{width:100%;border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem;font-weight:600;font-size:.95rem;background:var(--bg);color:var(--text);transition:border-color .2s;-webkit-appearance:none}
+    .form-ctrl:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(74,222,128,.1)}
+    .log-btn{width:100%;background:var(--green);color:#000;border:none;border-radius:var(--r-pill);padding:.8rem;font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;transition:transform .15s var(--spring),opacity .2s;margin-top:.4rem}
+    .log-btn:hover:not(:disabled){transform:translateY(-1px)}
+    .log-btn:active{transform:translateY(1px)!important;opacity:.9}
+    .log-btn:disabled{opacity:.35;cursor:not-allowed}
 
     /* === ACTIVITY LOG === */
-    .log-bento{background:var(--white)}
-    .activity-scroll{max-height:500px;overflow-y:auto;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.5rem;background:var(--bg-alabaster)}
-    .activity-scroll::-webkit-scrollbar{width:10px}
-    .activity-scroll::-webkit-scrollbar-track{background:var(--bg-alabaster);border-left:var(--border-w) solid var(--black)}
-    .activity-scroll::-webkit-scrollbar-thumb{background:var(--black);border-radius:5px;border:2px solid var(--bg-alabaster)}
-    .log-entry{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.2rem;margin-bottom:1.25rem;font-weight:700;box-shadow:6px 6px 0px var(--black);font-size:1.05rem}
+    .log-bento{background:var(--surface)}
+    .activity-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+    .activity-header .view-title{margin:0;font-size:1.1rem}
+    .activity-header select{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--r-pill);font-weight:600;padding:.3rem .6rem;font-family:inherit;font-size:.7rem;cursor:pointer}
+    .activity-scroll{max-height:60vh;overflow-y:auto;padding:.25rem}
+    .activity-scroll::-webkit-scrollbar{width:3px}
+    .activity-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+    .log-entry{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.85rem;margin-bottom:.5rem;font-weight:600;font-size:.85rem}
     .log-entry:last-child{margin-bottom:0}
     .log-entry-header{display:flex;justify-content:space-between;align-items:flex-start}
-    .log-hrs{color:var(--red);font-weight:900}
-    .log-ts{font-size:.9rem;display:block;margin-top:.5rem;font-weight:600;opacity:.8}
-    .log-empty{text-align:center;font-weight:900;font-size:1.2rem;padding:3rem;text-transform:uppercase;letter-spacing:-.02em}
-    .delete-log-btn{background:transparent;border:none;cursor:pointer;font-size:1.4rem;opacity:.5;transition:opacity .2s,transform .2s var(--spring);min-height:auto}
-    .delete-log-btn:hover{opacity:1;transform:scale(1.2)}
+    .log-hrs{color:var(--green);font-weight:800}
+    .log-ts{font-size:.7rem;display:block;margin-top:.2rem;font-weight:500;color:var(--text3)}
+    .log-empty{text-align:center;font-weight:700;font-size:.95rem;padding:2.5rem;color:var(--text3)}
+    .delete-log-btn{background:none;border:none;cursor:pointer;opacity:.3;transition:opacity .2s;min-height:auto;display:flex;align-items:center;justify-content:center;width:28px;height:28px}
+    .delete-log-btn:hover{opacity:.8}
+    .delete-log-btn svg{width:14px;height:14px;fill:none;stroke:var(--red);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
     /* === TOAST === */
-    .toast{position:fixed;top:2rem;right:2rem;background:var(--teal);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);box-shadow:8px 8px 0px var(--black);padding:1.5rem;font-weight:900;font-size:1.2rem;z-index:1000;transform:translateX(150%);transition:transform .4s var(--spring);text-transform:uppercase;letter-spacing:-.02em}
-    .toast.show{transform:translateX(0)}
+    .toast{position:fixed;top:1rem;left:1rem;right:1rem;background:var(--green);color:#000;border:none;border-radius:var(--r-pill);padding:.85rem 1.25rem;font-weight:800;font-size:.9rem;z-index:1000;transform:translateY(-120%);transition:transform .4s var(--spring);text-align:center}
+    .toast.show{transform:translateY(0)}
 
     /* === OVERLAYS === */
-    .winner-overlay,.settings-overlay{position:fixed;inset:0;background:rgba(249,249,246,.98);z-index:2000;display:flex;opacity:0;pointer-events:none;align-items:center;justify-content:center;padding:2rem;backdrop-filter:blur(4px);transition:opacity .3s ease}
+    .winner-overlay,.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;display:flex;opacity:0;pointer-events:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(12px);transition:opacity .25s}
     .winner-overlay.show,.settings-overlay.show{opacity:1;pointer-events:auto}
-    .winner-box,.settings-box{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);box-shadow:8px 8px 0px var(--black);padding:2.5rem;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .3s var(--spring)}
-    .settings-overlay.show .settings-box{transform:scale(1)}
-    .winner-box{box-shadow:12px 12px 0px var(--black);padding:4rem 2rem;text-align:center;max-width:600px}
-    .winner-overlay.show .winner-box{transform:scale(1)}
-    .settings-box{background:var(--bg-alabaster);text-align:left}
-    .settings-box .bento-title{margin-bottom:2rem}
-    .winner-ship{font-size:5rem;margin-bottom:1rem;display:block}
-    .winner-headline{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;text-transform:uppercase;margin-bottom:1rem;line-height:1;letter-spacing:-.04em}
-    .winner-sub{font-size:1.6rem;font-weight:700;margin-bottom:2.5rem;letter-spacing:-.02em}
-    .winner-dismiss{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.2rem 2.5rem;font-family:inherit;font-weight:900;font-size:1.3rem;text-transform:uppercase;letter-spacing:-.02em;cursor:pointer;box-shadow:8px 8px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring)}
-    .winner-dismiss:hover{transform:translate(-2px,-2px);box-shadow:10px 10px 0px var(--black)}
-    .winner-dismiss:active{transform:translate(6px,6px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+    .winner-box,.settings-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem 1.5rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;transform:scale(.96);transition:transform .3s var(--spring)}
+    .settings-overlay.show .settings-box,.winner-overlay.show .winner-box{transform:scale(1)}
+    .winner-box{text-align:center}
+    .settings-box{text-align:left}
+    .settings-box .bento-title{margin-bottom:1.25rem;font-size:1.1rem;color:var(--text)}
+    .winner-ship{font-size:1.5rem;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:50%;background:var(--surface2);border:2px solid var(--yellow);margin:0 auto .75rem;font-weight:800;color:var(--yellow);letter-spacing:.02em}
+    .winner-headline{font-size:clamp(1.8rem,5vw,2.5rem);font-weight:800;text-transform:uppercase;margin-bottom:.5rem;line-height:1;letter-spacing:-.04em;color:var(--yellow)}
+    .winner-sub{font-size:1.1rem;font-weight:600;margin-bottom:1.5rem;color:var(--text2)}
+    .winner-dismiss{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--r-pill);padding:.85rem 2rem;font-family:inherit;font-weight:800;font-size:1rem;text-transform:uppercase;cursor:pointer;transition:background .2s}
+    .winner-dismiss:hover{background:var(--surface3)}
 
-    /* === SETTINGS MODAL === */
-    .crew-card{background:var(--white);border:var(--border-w) solid var(--black);border-radius:var(--br);padding:1.5rem;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:6px 6px 0px var(--black)}
-    .crew-row{display:flex;gap:.8rem;align-items:center}
-    .crew-row input,.crew-member-row input{flex:1;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 8px);padding:.8rem;font-family:inherit;font-weight:700;min-width:0;box-shadow:inset 2px 2px 0 rgba(0,0,0,.05)}
-    .crew-row .ship-inp{flex:0 0 70px;text-align:center;font-size:1.5rem}
-    .crew-row .color-inp{flex:0 0 70px;padding:0;height:52px;cursor:pointer}
-    .crew-row .del-btn,.del-m-btn,.add-m-btn{background:var(--red);color:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 8px);font-weight:900;padding:.8rem;cursor:pointer;height:52px;transition:transform .2s var(--spring),box-shadow .2s var(--spring);box-shadow:4px 4px 0px var(--black)}
-    .del-m-btn{padding:0 1rem!important}
-    .add-m-btn{background:var(--teal);height:auto;padding:.5rem 1rem;width:fit-content;margin-top:1rem!important}
-    .crew-row .del-btn:active,.del-m-btn:active,.add-m-btn:active{transform:translate(2px,2px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
-    .settings-actions{display:flex;gap:1.5rem;margin-top:3rem}
-    .settings-actions button{flex:1;padding:1.2rem;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);cursor:pointer;box-shadow:6px 6px 0px var(--black);transition:transform .3s var(--spring),box-shadow .3s var(--spring)}
-    .settings-actions button.save-btn{background:var(--teal)}
-    .settings-actions button.add-btn{background:var(--magenta);color:var(--white)}
-    .settings-actions button.cancel-btn{background:var(--white)}
-    .settings-actions button:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0px var(--black)}
-    .settings-actions button:active{transform:translate(4px,4px)!important;box-shadow:0 0 0 var(--black)!important;transition:transform .05s,box-shadow .05s}
+    /* === SETTINGS === */
+    .crew-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-bottom:.75rem;display:flex;flex-direction:column;gap:.4rem}
+    .crew-row{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+    .crew-row input,.crew-member-row input{flex:1;border:1px solid var(--border);border-radius:10px;padding:.55rem;font-weight:600;min-width:0;background:var(--bg);color:var(--text);font-size:.85rem}
+    .crew-row .ship-inp{flex:0 0 50px;text-align:center;font-size:1.2rem}
+    .crew-row .color-inp{flex:0 0 44px;padding:0;height:44px;cursor:pointer;border-radius:10px;border:1px solid var(--border)}
+    .crew-row .del-btn,.del-m-btn,.add-m-btn{background:var(--red);color:#fff;border:none;border-radius:10px;font-weight:800;padding:.55rem;cursor:pointer;height:44px;transition:opacity .2s;font-size:.8rem}
+    .del-m-btn{padding:0 .6rem!important}
+    .add-m-btn{background:var(--green);color:#000;height:auto;padding:.35rem .65rem;width:fit-content;margin-top:.4rem!important;font-size:.75rem}
+    .settings-actions{display:flex;gap:.6rem;margin-top:1.5rem;flex-wrap:wrap}
+    .settings-actions button{flex:1;padding:.85rem;font-weight:800;text-transform:uppercase;border:1px solid var(--border);border-radius:var(--r-pill);cursor:pointer;transition:opacity .2s;font-size:.85rem;min-width:80px}
+    .settings-actions button.save-btn{background:var(--green);color:#000;border:none}
+    .settings-actions button.add-btn{background:var(--pink);color:#000;border:none}
+    .settings-actions button.cancel-btn{background:var(--surface2);color:var(--text)}
 
-    /* === RULES === */
-    .rules-bento{background:var(--bg-alabaster)}
-    .rules-list{list-style-type:none;display:flex;flex-direction:column;gap:1.25rem;font-size:1.1rem;font-weight:600}
-    .rules-list li{background:var(--white);border:var(--border-w) solid var(--black);border-radius:calc(var(--br) - 4px);padding:1.25rem;box-shadow:6px 6px 0px var(--black);line-height:1.5}
-    .rules-list li strong{font-weight:900;color:var(--magenta);text-transform:uppercase;margin-right:.5rem;letter-spacing:-.02em}
-
-    /* === BOTTOM NAV (hidden on desktop) === */
-    .bottom-nav{display:none}
-    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:none;border:none;border-right:var(--border-w) solid var(--black);font-family:inherit;font-weight:900;font-size:.75rem;cursor:pointer;color:var(--black);text-transform:uppercase;letter-spacing:-.02em;transition:background .15s}
-    .nav-item:last-child{border-right:none}
-    .nav-item.active{background:var(--yellow)}
-    .nav-icon{font-size:1.5rem;margin-bottom:2px}
-
-    /* === MOBILE === */
-    @media(max-width:768px){
-      body{padding:0 0 calc(70px + env(safe-area-inset-bottom)) 0}
-      .container{grid-template-columns:1fr;gap:.75rem;padding:.5rem}
-      .sidebar,.main-content{display:contents}
-      .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--white);border-top:var(--border-w) solid var(--black);z-index:1000;box-shadow:0 -4px 0 rgba(0,0,0,1)}
-      .bottom-nav.keyboard-open{display:none!important}
-      .bento{padding:1.25rem!important}
-      .header-bento{padding:1.25rem!important}
-
-      /* CSS-first tab hiding: all tab sections hidden by default on mobile */
-      #bento-header,#bento-stats,#tab-map,#tab-leaderboard,#tab-log,#tab-activity{display:none!important}
-      /* JS adds .tab-active to show the active tab's elements */
-      #bento-header.tab-active{display:block!important}
-      #bento-stats.tab-active{display:grid!important}
-      #tab-map.tab-active{display:block!important}
-      #tab-leaderboard.tab-active{display:block!important}
-      #tab-log.tab-active{display:block!important}
-      #tab-activity.tab-active{display:flex!important}
-
-      /* Stats grid fixes */
-      .stats-grid{gap:.5rem}
-      .stat-box{padding:.75rem .5rem;font-size:.8rem;gap:.25rem;overflow:hidden;word-break:break-word}
-      .stat-box.magenta.day-box{font-size:.75rem}
-      .stat-box.magenta.day-box>div:first-child{flex-wrap:wrap;gap:.25rem}
-      .day-btn{font-size:1rem;padding:0 2px}
-      #toggleDayBtn{font-size:.7rem!important;padding:.4rem!important}
-      .settings-btn{font-size:1.3rem;padding:.6rem;min-width:44px;min-height:44px}
-
-      .map-bento{padding:1.25rem 0}
-      .map-bento .bento-title{margin:0 1rem 1rem 1rem}
-      .map-inner{min-width:1200px!important;width:1200px!important}
-      .map-scroll{max-width:100vw;overscroll-behavior-x:contain}
-      .team-cards-grid{grid-template-columns:1fr}
-      .rules-bento{display:none!important}
-      input,select,.form-ctrl,.m-name-inp,.m-goal-inp{font-size:16px!important}
-      .toast{top:1rem;right:1rem;left:1rem;text-align:center;padding:1rem;font-size:1rem}
-      .winner-overlay,.settings-overlay{padding:1rem}
-      .settings-box{width:95%;max-height:95vh;padding:1.5rem 1rem}
-      .crew-row{flex-direction:column;align-items:stretch}
-      .crew-row .ship-inp,.crew-row .color-inp{flex:unset;height:44px}
-      .crew-row .del-btn{height:44px;padding:.5rem}
-      .del-m-btn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
-      .crew-member-row{flex-wrap:wrap;gap:.75rem!important}
-      .settings-actions{flex-direction:column}
-    }
+    /* === BANNER === */
+    .challenge-ended-banner{background:var(--red);color:#fff;text-align:center;font-weight:800;font-size:.9rem;padding:.6rem;text-transform:uppercase;display:none;border-radius:var(--r-sm);margin-bottom:.75rem}
+    .challenge-ended-banner.show{display:block}
   </style>
 </head>
 <body>
 
   <div class="challenge-ended-banner" id="challengeEndedBanner">CHALLENGE ENDED</div>
-
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <!-- Winner Overlay -->
   <div class="winner-overlay" id="winnerOverlay">
     <div class="winner-box">
-      <span class="winner-ship" id="winnerShipBig">🏴‍☠️</span>
+      <span class="winner-ship" id="winnerShipBig"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span>
       <div class="winner-headline">ONE PIECE FOUND!</div>
       <div class="winner-sub" id="winnerSubText">The Straw Hats claim the treasure!</div>
-      <p id="winnerDebugText"
-        style="font-size: 1.1rem; font-weight: 900; color: var(--black); margin-top: 1rem; margin-bottom: 1.5rem; background: var(--bg-alabaster); border: 2px dashed var(--black); padding: 0.5rem; display: inline-block;">
-      </p><br>
-      <button class="winner-dismiss" id="winnerDismissBtn">
-        BACK TO START
-      </button>
+      <p id="winnerDebugText" style="font-size:.85rem;font-weight:700;color:var(--text2);margin-top:.5rem;margin-bottom:1rem;background:var(--bg);border:1px dashed var(--border);padding:.5rem;display:inline-block;border-radius:10px;"></p><br>
+      <button class="winner-dismiss" id="winnerDismissBtn">BACK TO START</button>
     </div>
   </div>
 
   <!-- Settings Overlay -->
   <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-box">
-      <h2 class="bento-title">Captain's Quarters</h2>
-
-      <div class="day-settings-section"
-        style="background: var(--white); border: var(--border-w) solid var(--black); padding: 1rem; margin-bottom: 1.5rem; box-shadow: 4px 4px 0px var(--black);">
-        <h3 style="font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--black);">Voyage
-          Settings</h3>
-        <div style="display: flex; gap: 1rem; align-items: center; color: var(--black);">
-          <label style="font-weight: 700;">Set Current Day (1-7):</label>
-          <input type="number" id="currentDayInp" min="1" max="7"
-            style="border: 2px solid var(--black); padding: 0.5rem; font-weight: 700; width: 80px;">
+      <h2 class="bento-title" style="font-size:1.1rem;color:var(--text);">Captain's Quarters</h2>
+      <div style="background:var(--surface2);border:1px solid var(--border);padding:1rem;margin-bottom:1.25rem;border-radius:14px;">
+        <h3 style="font-weight:800;margin-bottom:.4rem;text-transform:uppercase;color:var(--text);font-size:.8rem;letter-spacing:.04em;">Voyage Settings</h3>
+        <div style="display:flex;gap:.75rem;align-items:center;color:var(--text);">
+          <label style="font-weight:600;font-size:.8rem;color:var(--text2);">Current Day (1-7):</label>
+          <input type="number" id="currentDayInp" min="1" max="7" style="border:1px solid var(--border);padding:.4rem;font-weight:700;width:60px;background:var(--bg);color:var(--text);border-radius:8px;font-size:.9rem;">
         </div>
-        <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8; font-weight: 600; color: var(--black);">
-          * Use this to manually adjust the ongoing day.
-        </div>
+        <div style="font-size:.7rem;margin-top:.4rem;color:var(--text3);font-weight:500;">* Manually adjust the ongoing day.</div>
       </div>
-
-      <h3
-        style="font-weight: 900; margin-bottom: 1rem; text-transform: uppercase; font-size: 1.5rem; color: var(--black);">
-        Crew Rosters</h3>
+      <h3 style="font-weight:800;margin-bottom:.75rem;text-transform:uppercase;font-size:.9rem;color:var(--text);letter-spacing:.03em;">Crew Rosters</h3>
       <div id="teamsEditor"></div>
       <div class="settings-actions">
         <button class="add-btn" id="addCrewBtn">Add Crew</button>
         <button class="save-btn" id="saveSettingsBtn">Save</button>
         <button class="cancel-btn" id="closeSettingsBtn">Close</button>
       </div>
-      <div style="margin-top: 1rem; text-align: center;">
-        <button id="resetDefaultsBtn"
-          style="background: transparent; color: var(--red); border: 2px dashed var(--red); padding: 0.5rem 1rem; font-weight: 900; cursor: pointer; text-transform: uppercase;">Reset
-          Race to Defaults</button>
+      <div style="margin-top:.75rem;text-align:center;">
+        <button id="resetDefaultsBtn" style="background:transparent;color:var(--red);border:1px dashed var(--red);padding:.4rem .75rem;font-weight:800;cursor:pointer;text-transform:uppercase;border-radius:999px;font-size:.75rem;">Reset Race</button>
       </div>
     </div>
   </div>
 
-  <!-- ========== DASHBOARD ========== -->
-  <div class="container">
+  <!-- APP CONTENT -->
+  <main class="app-content">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-      <!-- Header -->
-      <header class="bento header-bento" id="bento-header">
-        <div class="header-inner">
-          <div>
-            <h1>Grand Line Race</h1>
-            <p>ONE PIECE STUDY TRACKER</p>
-          </div>
-          <button id="settingsBtn" class="settings-btn" title="Captain's Quarters">⚙️</button>
+    <!-- MAP VIEW -->
+    <div id="tab-map" class="tab-view tab-active">
+      <header class="app-header">
+        <div>
+          <h1>Grand Line Race</h1>
+          <p>One Piece Study Tracker</p>
         </div>
+        <button id="settingsBtn" class="settings-btn" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       </header>
 
-      <!-- Stats Grid -->
       <div class="stats-grid" id="bento-stats">
         <div class="stat-box teal">
-          <span>🕐</span> <span id="clockEl">--:--:--</span>
+          <span class="stat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> <span id="clockEl">--:--:--</span>
         </div>
-        <div class="stat-box magenta day-box" style="flex-direction: column; align-items: stretch; gap: 0.5rem; justify-content: center;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><span>📅</span> DAY <span id="dayEl" style="margin: 0 4px;">1</span> OF 7</div>
+        <div class="stat-box magenta day-box" style="flex-direction:column;align-items:stretch;gap:.35rem;justify-content:center;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><span class="stat-ico" style="display:inline-flex;vertical-align:middle;margin-right:2px"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> DAY <span id="dayEl" style="margin:0 2px;">1</span>/7</div>
             <div>
-              <button class="day-btn" id="prevDayBtn" title="Previous Day">◀</button>
-              <button class="day-btn" id="nextDayBtn" title="Next Day">▶</button>
+              <button class="day-btn" id="prevDayBtn" title="Prev">◀</button>
+              <button class="day-btn" id="nextDayBtn" title="Next">▶</button>
             </div>
           </div>
-          <button id="toggleDayBtn" style="background: var(--yellow); border: 2px solid var(--black); font-weight: 900; font-family: inherit; padding: 4px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 2px 2px 0px var(--black);">START DAY 1</button>
+          <button id="toggleDayBtn" style="background:var(--surface2);border:1px solid var(--border);font-weight:800;font-family:inherit;padding:3px;cursor:pointer;">START DAY 1</button>
         </div>
         <div class="stat-box red">
-          <span>⚓</span> TOTAL: <span id="totalEl">0</span> HRS
+          <span class="stat-ico"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> TOTAL: <span id="totalEl">0</span> HRS
         </div>
         <div class="stat-box">
-          <span>🎯</span> GOAL TODAY: <span id="globalGoalsEl">0</span> HRS
+          <span class="stat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> GOAL: <span id="globalGoalsEl">0</span> HRS
         </div>
       </div>
 
-      <!-- Log Hours Form -->
-      <div class="bento form-bento" id="tab-log">
-        <h2 class="bento-title">Log Hours</h2>
+      <section class="bento map-bento">
+        <h2 class="bento-title">The Grand Line Track</h2>
+        <div class="map-scroll">
+          <div class="map-inner">
+            <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="trackGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#4ADE80" stop-opacity="0.6"/>
+                  <stop offset="50%" stop-color="#38BDF8" stop-opacity="0.6"/>
+                  <stop offset="100%" stop-color="#F472B6" stop-opacity="0.6"/>
+                </linearGradient>
+              </defs>
+              <path d="M 60 80 L 1140 80" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+              <path d="M 60 150 L 1140 150" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+              <path d="M 60 250 L 1140 250" fill="none" stroke="url(#trackGlow)" stroke-width="3" stroke-dasharray="8 6"/>
+              <path d="M 60 250 L 1140 250" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="40"/>
+              <path d="M 60 350 L 1140 350" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+              <path d="M 60 420 L 1140 420" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+              <path d="M 60 490 L 1140 490" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>
+            </svg>
+            <div class="waypoint" style="offset-distance:0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
+            <div class="waypoint" style="offset-distance:12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
+            <div class="waypoint" style="offset-distance:25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
+            <div class="waypoint" style="offset-distance:37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
+            <div class="waypoint" style="offset-distance:50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
+            <div class="waypoint" style="offset-distance:62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
+            <div class="waypoint" style="offset-distance:75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
+            <div class="waypoint" style="offset-distance:87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
+            <div class="waypoint" style="offset-distance:100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
+            <div id="shipsTrack"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- LEADERBOARD VIEW -->
+    <div id="tab-leaderboard" class="tab-view">
+      <h2 class="view-title">Leaderboard</h2>
+      <div class="team-cards-grid" id="teamCardsGrid"></div>
+    </div>
+
+    <!-- LOG VIEW -->
+    <div id="tab-log" class="tab-view">
+      <h2 class="view-title">Log Hours</h2>
+      <div class="bento form-bento">
         <div class="form-row">
           <label class="form-lbl" for="teamSel">Choose Your Crew</label>
           <select class="form-ctrl" id="teamSel"></select>
@@ -324,74 +300,31 @@
         </div>
         <button class="log-btn" id="logBtn">Set Sail!</button>
       </div>
+    </div>
 
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-
-      <!-- Map -->
-      <div id="tab-map">
-        <section class="bento map-bento">
-          <h2 class="bento-title">The Grand Line Track</h2>
-          <div class="map-scroll">
-            <div class="map-inner">
-              <svg class="map-svg" viewBox="0 -50 1200 650" preserveAspectRatio="none">
-                <path d="M 60 80 L 1140 80" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-                <path d="M 60 150 L 1140 150" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-                <path d="M 60 250 L 1140 250" fill="none" stroke="var(--black)" stroke-width="8" stroke-dasharray="15 15" />
-                <path d="M 60 350 L 1140 350" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-                <path d="M 60 420 L 1140 420" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-                <path d="M 60 490 L 1140 490" fill="none" stroke="var(--black)" stroke-width="2" stroke-dasharray="5 5" opacity="0.2" />
-              </svg>
-              <div class="waypoint" style="offset-distance: 0%"><div class="waypoint-icon"></div><span class="waypoint-text">Loguetown</span></div>
-              <div class="waypoint" style="offset-distance: 12.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Reverse Mtn</span></div>
-              <div class="waypoint" style="offset-distance: 25%"><div class="waypoint-icon"></div><span class="waypoint-text">Alabasta</span></div>
-              <div class="waypoint" style="offset-distance: 37.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Skypiea</span></div>
-              <div class="waypoint" style="offset-distance: 50%"><div class="waypoint-icon"></div><span class="waypoint-text">Water 7</span></div>
-              <div class="waypoint" style="offset-distance: 62.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Sabaody</span></div>
-              <div class="waypoint" style="offset-distance: 75%"><div class="waypoint-icon"></div><span class="waypoint-text">Dressrosa</span></div>
-              <div class="waypoint" style="offset-distance: 87.5%"><div class="waypoint-icon"></div><span class="waypoint-text">Wano</span></div>
-              <div class="waypoint" style="offset-distance: 100%"><div class="waypoint-icon end-icon"></div><span class="waypoint-text">Laugh Tale</span></div>
-              <div id="shipsTrack"></div>
-            </div>
-          </div>
-        </section>
+    <!-- ACTIVITY VIEW -->
+    <div id="tab-activity" class="tab-view">
+      <div class="activity-header">
+        <h2 class="view-title">Captain's Log</h2>
+        <select id="logTeamFilter" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:999px;font-weight:600;padding:.3rem .5rem;font-family:inherit;max-width:120px;cursor:pointer;font-size:.7rem;">
+          <option value="ALL">All Crews</option>
+        </select>
       </div>
-
-      <!-- Leaderboard -->
-      <section class="bento leaderboard-bento" id="tab-leaderboard">
-        <h2 class="bento-title">Leaderboard</h2>
-        <div class="team-cards-grid" id="teamCardsGrid"></div>
-      </section>
-
-      <!-- Captain's Log -->
-      <div class="bento log-bento" id="tab-activity" style="display:flex; flex-direction:column;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1rem; border-bottom: var(--border-w) solid var(--black); padding-bottom:0.5rem;">
-          <h2 class="bento-title" style="border:none; margin:0; padding:0;">Captain's Log</h2>
-          <select id="logTeamFilter" style="border: 2px solid var(--black); font-weight:700; padding:0.2rem; font-family:inherit; max-width:150px; cursor:pointer;">
-            <option value="ALL">All Crews (Activity)</option>
-          </select>
-        </div>
-        <div class="activity-scroll" id="activityLog" style="flex:1;">
-          <div class="log-empty">No voyages logged yet.</div>
-        </div>
+      <div class="activity-scroll" id="activityLog">
+        <div class="log-empty">No voyages logged yet.</div>
       </div>
+    </div>
 
-      <!-- Rules -->
-      <section class="bento rules-bento">
-        <h2 class="bento-title">📜 Pirate Code (Rules)</h2>
-        <ul class="rules-list">
-          <li><strong>The 7-Day Voyage:</strong> The race to the One Piece lasts exactly 7 days. Log your study hours daily!</li>
-          <li><strong>Momentum System:</strong> Your daily goal dynamically scales based on your consistency.</li>
-          <li><strong>Success:</strong> If you hit or exceed your daily goal, your goal for the next day increases by 15%!</li>
-          <li><strong>Failure:</strong> If you fall short, your momentum breaks and your goal resets back to your base daily goal.</li>
-          <li><strong>Winning:</strong> The first crew to accumulate enough hours to reach Laugh Tale claims the One Piece!</li>
-        </ul>
-      </section>
+  </main>
 
-    </main>
-  </div>
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="map"><span class="nav-ico"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>Map</button>
+    <button class="nav-btn" data-tab="leaderboard"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22V8a2 2 0 0 0-2-2H6v0a2 2 0 0 0-2 2v0c0 4.418 3.582 8 8 8s8-3.582 8-8v0a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v14"/></svg></span>Rank</button>
+    <button class="nav-btn" data-tab="log"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>Log</button>
+    <button class="nav-btn" data-tab="activity"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>Logs</button>
+  </nav>
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -411,11 +344,11 @@
     const db = getFirestore(app);
     const raceDocRef = doc(db, 'raceData/currentRace');
     const DEFAULT_TEAMS = [
-      { id: 'straw', name: 'STRAWHATS', ship: '🏴‍☠️', color: '#E93D3D', members: [{ name: 'Gunko', goal: 5 }, { name: 'Luffy', goal: 10 }] },
-      { id: 'heart', name: 'HEART PIRATES', ship: '⚓', color: '#3DCCC7', members: [{ name: 'Tashigi', goal: 10 }, { name: 'Carrot', goal: 8 }] },
-      { id: 'fire', name: 'FIRE FIST CREW', ship: '🔥', color: '#FFD600', members: [{ name: 'Sabo', goal: 10 }, { name: 'Portgas D Ace', goal: 7 }] },
-      { id: 'warlrd', name: 'WARLORDS CREW', ship: '⚔️', color: '#FF4081', members: [{ name: 'Yamato', goal: 12 }, { name: 'Zoro', goal: 12 }] },
-      { id: 'sky', name: 'SKY PIRATES', ship: '☁️', color: '#111111', members: [{ name: 'Beckman', goal: 6 }, { name: 'Sanji', goal: 12 }] },
+      { id: 'straw', name: 'STRAWHATS', ship: 'SH', color: '#E93D3D', members: [{ name: 'Gunko', goal: 5 }, { name: 'Luffy', goal: 10 }] },
+      { id: 'heart', name: 'HEART PIRATES', ship: 'HP', color: '#3DCCC7', members: [{ name: 'Tashigi', goal: 10 }, { name: 'Carrot', goal: 8 }] },
+      { id: 'fire', name: 'FIRE FIST CREW', ship: 'FF', color: '#FFD600', members: [{ name: 'Sabo', goal: 10 }, { name: 'Portgas D Ace', goal: 7 }] },
+      { id: 'warlrd', name: 'WARLORDS CREW', ship: 'WL', color: '#FF4081', members: [{ name: 'Yamato', goal: 12 }, { name: 'Zoro', goal: 12 }] },
+      { id: 'sky', name: 'SKY PIRATES', ship: 'SK', color: '#111111', members: [{ name: 'Beckman', goal: 6 }, { name: 'Sanji', goal: 12 }] },
     ];
 
     let state = {
@@ -875,9 +808,9 @@
           let summaryHtml = '';
           if (!isOngoing) {
             if (success) {
-              summaryHtml = `🔥 Momentum kept! Next goal: ${(dayGoal * 1.15).toFixed(1)} hrs`;
+              summaryHtml = `▲ Momentum kept! Next goal: ${(dayGoal * 1.15).toFixed(1)} hrs`;
             } else {
-              summaryHtml = `🧊 Momentum lost. Goal reset to ${baseGoal.toFixed(1)} hrs`;
+              summaryHtml = `▼ Momentum lost. Goal reset to ${baseGoal.toFixed(1)} hrs`;
             }
           }
 
@@ -918,11 +851,11 @@
         return `<div class="log-entry">
       <div class="log-entry-header">
         <div>
-          ${e.ship} <strong>${e.teamName}</strong> <span style="font-size:0.8rem; background:var(--black); color:var(--white); padding:0 4px;">Day ${e.day || '?'}</span><br>
+          <strong>${e.teamName}</strong> <span style="font-size:0.8rem; background:var(--black); color:var(--white); padding:0 4px;">Day ${e.day || '?'}</span><br>
           ${e.name} charted <span class="log-hrs">+${h} HRS</span>
           <span class="log-ts">${ts}</span>
         </div>
-        <button class="delete-log-btn" title="Delete Log" onclick="deleteLog('${e.id}')">🗑️</button>
+        <button class="delete-log-btn" title="Delete Log" onclick="deleteLog('${e.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
       </div>
     </div>`;
       }).join('');
@@ -1042,7 +975,7 @@
 
     function addCrewRow() {
       const container = document.getElementById('teamsEditor');
-      const newTeam = { id: 'team_' + Date.now(), name: '', ship: '⛵', color: '#3DCCC7', members: [{ name: '', goal: 5 }] };
+      const newTeam = { id: 'team_' + Date.now(), name: '', ship: 'NEW', color: '#3DCCC7', members: [{ name: '', goal: 5 }] };
       container.appendChild(createTeamRow(newTeam, container.children.length));
     }
 
@@ -1092,186 +1025,23 @@
       showToast("Settings Saved!");
     }
   </script>
-  <script>
-    function injectPremiumCanvas() {
-      // 1. Create and style the canvas
-      const canvas = document.createElement('canvas');
-      canvas.id = 'premium-bg-canvas';
-      canvas.style.position = 'fixed';
-      canvas.style.top = '0';
-      canvas.style.left = '0';
-      canvas.style.width = '100vw';
-      canvas.style.height = '100vh';
-      canvas.style.zIndex = '-1'; // Keeps it behind all your bento boxes
-      canvas.style.pointerEvents = 'none'; // Ensures it doesn't block clicks
-      document.body.appendChild(canvas);
-
-      const ctx = canvas.getContext('2d');
-
-      // 2. The Drawing Function
-      const drawStaticPattern = () => {
-        // Match canvas internal resolution to actual screen size for crisp lines
-        canvas.width = window.innerWidth * window.devicePixelRatio;
-        canvas.height = window.innerHeight * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-
-        // Clear previous drawing
-        ctx.clearRect(0, 0, width, height);
-
-        // --- A. Draw the Blueprint Grid ---
-        const gridSize = 80;
-        ctx.strokeStyle = 'rgba(15, 15, 15, 0.04)'; // Extremely subtle black
-        ctx.lineWidth = 1;
-
-        for (let x = 0; x <= width; x += gridSize) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, height);
-          ctx.stroke();
-        }
-        for (let y = 0; y <= height; y += gridSize) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(width, y);
-          ctx.stroke();
-        }
-
-        // --- B. Draw Crosshair Intersections ---
-        ctx.strokeStyle = 'rgba(15, 15, 15, 0.15)'; // Darker for emphasis
-        ctx.lineWidth = 2;
-        const markerSize = 6;
-
-        // Draw crosshairs at every 3rd grid intersection
-        for (let x = gridSize; x < width; x += gridSize * 3) {
-          for (let y = gridSize; y < height; y += gridSize * 3) {
-            ctx.beginPath();
-            // Horizontal line of the +
-            ctx.moveTo(x - markerSize, y);
-            ctx.lineTo(x + markerSize, y);
-            // Vertical line of the +
-            ctx.moveTo(x, y - markerSize);
-            ctx.lineTo(x, y + markerSize);
-            ctx.stroke();
-          }
-        }
-
-        // --- C. Draw Nautical / Grand Line Currents ---
-        ctx.strokeStyle = 'rgba(46, 196, 182, 0.15)'; // Subtle version of your Teal (--teal)
-        ctx.lineWidth = 3;
-        ctx.setLineDash([12, 18]); // Dashed line effect
-
-        // Current Line 1
-        ctx.beginPath();
-        ctx.moveTo(-100, height * 0.2);
-        ctx.bezierCurveTo(width * 0.3, height * 0.1, width * 0.6, height * 0.9, width + 100, height * 0.6);
-        ctx.stroke();
-
-        // Current Line 2 (Offset)
-        ctx.beginPath();
-        ctx.moveTo(-100, height * 0.8);
-        ctx.bezierCurveTo(width * 0.4, height * 0.9, width * 0.5, height * 0.2, width + 100, height * 0.3);
-        ctx.stroke();
-
-        ctx.setLineDash([]); // Reset dash for future redraws
-      };
-
-      // 3. Initial draw and resize listener
-      drawStaticPattern();
-
-      // Use a small debounce for window resizing so it doesn't lag
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(drawStaticPattern, 100);
-      });
-    }
-
-    // Fire it up when the DOM is ready
-    document.addEventListener('DOMContentLoaded', injectPremiumCanvas);
-  </script>
-
-  <!-- Mobile Bottom Nav -->
-  <nav class="bottom-nav" id="bottomNav">
-    <button class="nav-item active" data-tab="map">
-      <span class="nav-icon">🗺️</span>
-      <span>Map</span>
-    </button>
-    <button class="nav-item" data-tab="leaderboard">
-      <span class="nav-icon">🏆</span>
-      <span>Rank</span>
-    </button>
-    <button class="nav-item" data-tab="log">
-      <span class="nav-icon">✍️</span>
-      <span>Log</span>
-    </button>
-    <button class="nav-item" data-tab="activity">
-      <span class="nav-icon">📜</span>
-      <span>Crew Logs</span>
-    </button>
-  </nav>
 
   <script>
-    // Tab switching logic for mobile — uses CSS-first approach
-    // On mobile, all tab sections are hidden by CSS by default.
-    // JS adds .tab-active to show the correct sections.
-    var TAB_MAP = {
-      map: ['bento-header', 'bento-stats', 'tab-map'],
-      leaderboard: ['tab-leaderboard'],
-      log: ['tab-log'],
-      activity: ['tab-activity']
+    // Tab switching
+    var TAB_IDS = ['tab-map','tab-leaderboard','tab-log','tab-activity'];
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});
+      TAB_IDS.forEach(function(id){
+        var el=document.getElementById(id);
+        if(el) el.classList.toggle('tab-active',id==='tab-'+tab);
+      });
+      var c=document.querySelector('.app-content');
+      if(c) c.scrollTop=0;
     };
-    var ALL_TAB_IDS = ['bento-header', 'bento-stats', 'tab-map', 'tab-leaderboard', 'tab-log', 'tab-activity'];
-
-    window.switchTab = function(tab, event) {
-      if (event) {
-        document.querySelectorAll('.nav-item').forEach(function(btn) { btn.classList.remove('active'); });
-        event.currentTarget.classList.add('active');
-      }
-      // Remove tab-active from all
-      ALL_TAB_IDS.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.classList.remove('tab-active');
-      });
-      // Add tab-active to the visible sections
-      var show = TAB_MAP[tab] || [];
-      show.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.classList.add('tab-active');
-      });
-    };
-
-    // Wire up nav buttons
-    document.querySelectorAll('.nav-item[data-tab]').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        switchTab(btn.dataset.tab, e);
-      });
+    document.querySelectorAll('.nav-btn[data-tab]').forEach(function(b){
+      b.addEventListener('click',function(){switchTab(b.dataset.tab);});
     });
-
-    // Handle Android Keyboard
-    var bottomNav = document.getElementById('bottomNav');
-    if (bottomNav) {
-      document.body.addEventListener('focus', function(e) {
-        if ((e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') && window.innerWidth <= 768) {
-          bottomNav.classList.add('keyboard-open');
-        }
-      }, true);
-      document.body.addEventListener('blur', function(e) {
-        if ((e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') && window.innerWidth <= 768) {
-          bottomNav.classList.remove('keyboard-open');
-        }
-      }, true);
-    }
-
-    // Init mobile view — show map tab by default
-    if (window.innerWidth <= 768) {
-      switchTab('map', null);
-      // Also set the first nav button as active
-      var mapBtn = document.querySelector('.nav-item[data-tab="map"]');
-      if (mapBtn) mapBtn.classList.add('active');
-    }
+    switchTab('map');
   </script>
 </body>
 </html>
