@@ -22,7 +22,21 @@
     }
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{height:100%}
-    body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%;display:flex;flex-direction:column;overflow-x:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
+    /* KILL THE GREEN BAR — targets shadow DOM + injected elements */
+    :host, .preact-border-shadow-host, [class*="preact-"], [id*="preact-"],
+    body > div:first-child[style*="background-color"],
+    #___gatsby, #next-top-loader {
+      display: none !important;
+      height: 0 !important;
+      width: 0 !important;
+      opacity: 0 !important;
+      position: absolute !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+      top: -9999px !important;
+    }
+    html, body { margin: 0 !important; padding: 0 !important; overflow-x: hidden; }
+    body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%;display:flex;flex-direction:column;line-height:1.5;-webkit-font-smoothing:antialiased}
     input,select,button{min-height:44px;font-family:inherit;color:var(--text)}
 
     /* === APP SHELL === */
@@ -163,6 +177,14 @@
     /* === BANNER === */
     .challenge-ended-banner{background:var(--red);color:#fff;text-align:center;font-weight:800;font-size:.9rem;padding:.6rem;text-transform:uppercase;display:none;border-radius:var(--r-sm);margin-bottom:.75rem}
     .challenge-ended-banner.show{display:block}
+
+    /* Force-hide any top-level pseudo borders */
+    html::before, body::before {
+      display: none !important;
+    }
+    .map-svg path[stroke="url(#trackGlow)"] {
+      stroke: rgba(255,255,255,0.05) !important;
+    }
   </style>
 </head>
 <body>
@@ -1042,6 +1064,20 @@
       b.addEventListener('click',function(){switchTab(b.dataset.tab);});
     });
     switchTab('map');
+  </script>
+
+  <script>
+    // Last resort: find and kill any injected green bar
+    (function() {
+      const killBar = () => {
+        const bar = document.querySelector('.preact-border-shadow-host') ||
+                    document.querySelector('[class^="preact-"]');
+        if (bar) { bar.style.display = 'none'; bar.remove(); }
+      };
+      killBar();
+      setTimeout(killBar, 100);
+      setTimeout(killBar, 1000);
+    })();
   </script>
 </body>
 </html>
